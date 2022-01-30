@@ -2,7 +2,6 @@
 
 #include "FilterSortModule.h"
 #include "Filter.h"
-#include "FilterInterface.h"
 
 DEFINE_LOG_CATEGORY(LogFilterSort)
 
@@ -12,16 +11,21 @@ void FFilterSortModule::StartupModule()
 {
 	for (TObjectIterator<UClass> It; It; ++It)
 	{
-		// if (It->IsChildOf(UFilterInterface::StaticClass()) &&
-		// 	!It->HasAnyClassFlags(EClassFlags::CLASS_Abstract))
-		// {
-		// 	UE_LOG(LogFilterSort, Log, TEXT("Found Class %s"), *It->GetName());
-		// }
+		if (!It->HasAnyClassFlags(EClassFlags::CLASS_Abstract) && It->GetSuperClass() == UFilter::StaticClass())
+		{
+			auto defulat = Cast<UFilter>(It->GetDefaultObject());
+			auto dsds = defulat->GetDataTypeClass();
+
+			classes.FindOrAdd(dsds).Emplace(*It);
+			
+			UE_LOG(LogFilterSort, Log, TEXT("Found Class %s"), *It->GetName());
+		}
 	}
 }
 
 void FFilterSortModule::ShutdownModule()
 {
+	classes.Empty(0);
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
 }
