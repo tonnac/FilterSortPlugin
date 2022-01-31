@@ -8,38 +8,46 @@
 #include "FilterSortFunctor.h"
 #include "Filter.generated.h"
 
-#define IMPLEMENT_COMMON(TDataType, TClass)																			\
-private:																											\
-	virtual UClass* GetDataTypeClass() const override { return TDataType::StaticClass(); }							\
-public:																												\
-	virtual bool operator()(const TDataType* _pData) override { return TFilterFunctor<TClass>()(this, _pData); };	\
-	virtual bool IsEmpty() override { return TFilterFunctor<TClass>::IsEmpty(this); };								\
+#define DECLARE_DATATYPE(TDataType)													\
+	public:																			\
+		virtual bool operator()(const TDataType* _pData)	{ return false;	}		\
+		virtual void UpdateFilter(TFilterInterface<TDataType>* _pFilterInterface) {}
 
-#define IMPLEMENT_HASCONTAINER_FILTER(TDataType, TClass)	\
-IMPLEMENT_COMMON(TDataType, TClass)							\
-public:														\
+
+#define IMPLEMENT_COMMON_FILTER(TDataType, TClass, Index)																							\
+private:																																			\
+	virtual UClass* GetDataTypeClass() const override { return TDataType::StaticClass(); }															\
+public:																																				\
+	virtual bool operator()(const TDataType* _pData) override { return TFilterFunctor<TClass>()(this, _pData); }						\
+	virtual void UpdateFilter(TFilterInterface<TDataType>* _pFilterInterface) { TFilterFunctor<TClass>::UpdateFilter(this, _pFilterInterface); }		\
+	bool IsEmpty() { return TFilterFunctor<TClass>::IsEmpty(this); };																			\
+	virtual int32 GetIndex() const override { return Index; }
+
+#define IMPLEMENT_HASCONTAINER_FILTER(TDataType, TClass, Index) \
+IMPLEMENT_COMMON_FILTER(TDataType, TClass, Index)				 \
+public:													 \
 	TSet<TFilterInterface<TDataType>*> CurrentFilters;
 
-#define IMPLEMENT_HASNOTCONTAINER_FILTER(TDataType, TClass)	\
-IMPLEMENT_COMMON(TDataType, TClass)							\
-public:														\
+#define IMPLEMENT_FILTER(TDataType, TClass, Index)	\
+IMPLEMENT_COMMON_FILTER(TDataType, TClass, Index)	\
+public:										\
 	TFilterInterface<TDataType>* CurrentFilter;
 
 class UAObject;
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class FILTERSORT_API UFilter : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	virtual bool operator()(const UAObject* _pData)	{ return false;	}
+	DECLARE_DATATYPE(UAObject)
 	
 public:
 	virtual void Initialize() PURE_VIRTUAL(UFilter::Initialize, );
 	UFUNCTION()
 	virtual UClass* GetDataTypeClass() const PURE_VIRTUAL(UFilter::GetDataTypeClass, return nullptr;);
-	virtual bool IsEmpty() PURE_VIRTUAL(UFilter::IsEmpty, return false; );
+	virtual int32 GetIndex() const PURE_VIRTUAL(UFilter::GetIndex, return -1;);
 };

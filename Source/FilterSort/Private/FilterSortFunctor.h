@@ -13,6 +13,12 @@ struct TFilterFunctor
 		return _pFilter->CurrentFilter->Is_Satisfied(_pData);
 	}
 
+	template <typename U>
+	static void UpdateFilter(T* _pFilter, TFilterInterface<U>* _pFilterInterface)
+	{
+		_pFilter->CurrentFilter = _pFilter->CurrentFilter != nullptr ? nullptr : _pFilterInterface;
+	}
+
 	static bool IsEmpty(T* _pFilter)
 	{
 		return _pFilter->CurrentFilter == nullptr;
@@ -39,6 +45,19 @@ struct TFilterFunctor <T, decltype((void)T::CurrentFilters, (int32)0)>
 		}
 
 		return false;
+	}
+
+	template <typename U>
+	static void UpdateFilter(T* _pFilter, TFilterInterface<U>* _pFilterInterface)
+	{
+		if (_pFilter->CurrentFilters.Contains(_pFilterInterface))
+		{
+			_pFilter->CurrentFilters.Remove(_pFilterInterface);
+		}
+		else
+		{
+			_pFilter->CurrentFilters.Emplace(_pFilterInterface);
+		}
 	}
 
 	static bool IsEmpty(T* _pFilter)
