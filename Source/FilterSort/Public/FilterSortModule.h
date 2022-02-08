@@ -5,6 +5,10 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
+#define ADD_DATATYPE(TDataType)													\
+	public:																		\
+		virtual bool operator()(const TDataType* _pData)	{ return false;	}
+
 DECLARE_LOG_CATEGORY_EXTERN(LogFilterSort, Log, All)
 
 class FFilterSortModule : public IModuleInterface

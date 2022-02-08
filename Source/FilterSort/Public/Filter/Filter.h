@@ -3,15 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "FilterSortModule.h"
 #include "UObject/Object.h"
-#include "FilterInterface.h"
-#include "FilterSortFunctor.h"
+#include "FilterElement.h"
+#include "Filter/FilterFunctor.h"
 #include "Filter.generated.h"
-
-#define DECLARE_DATATYPE(TDataType)													\
-	public:																			\
-		virtual bool operator()(const TDataType* _pData)	{ return false;	}		\
-		virtual void UpdateFilter(TFilterInterface<TDataType>* _pFilterInterface) {}
 
 
 #define IMPLEMENT_COMMON_FILTER(TDataType, TClass, Index)																							\
@@ -19,19 +15,20 @@ private:																																			\
 	virtual UClass* GetDataTypeClass() const override { return TDataType::StaticClass(); }															\
 public:																																				\
 	virtual bool operator()(const TDataType* _pData) override { return TFilterFunctor<TClass>()(this, _pData); }						\
-	virtual void UpdateFilter(TFilterInterface<TDataType>* _pFilterInterface) { TFilterFunctor<TClass>::UpdateFilter(this, _pFilterInterface); }		\
+	virtual void UpdateFilter(UFilterElement* _pFilterElement) { TFilterFunctor<TClass>::UpdateFilter(this, _pFilterElement); }		\
+	virtual void BuildWidget(UFilterWidget* _pFilterWidget) { TFilterFunctor<TClass>::BuildWidget(this, _pFilterWidget); }		\
 	bool IsEmpty() { return TFilterFunctor<TClass>::IsEmpty(this); };																			\
 	virtual int32 GetIndex() const override { return Index; }
 
 #define IMPLEMENT_HASCONTAINER_FILTER(TDataType, TClass, Index) \
 IMPLEMENT_COMMON_FILTER(TDataType, TClass, Index)				 \
 public:													 \
-	TSet<TFilterInterface<TDataType>*> CurrentFilters;
+	TSet<TWeakObjectPtr<UFilterElement>> CurrentFilters;
 
 #define IMPLEMENT_FILTER(TDataType, TClass, Index)	\
 IMPLEMENT_COMMON_FILTER(TDataType, TClass, Index)	\
 public:										\
-	TFilterInterface<TDataType>* CurrentFilter;
+	TWeakObjectPtr<UFilterElement> CurrentFilter;
 
 class UAObject;
 /**
@@ -43,11 +40,15 @@ class FILTERSORT_API UFilter : public UObject
 	GENERATED_BODY()
 
 public:
-	DECLARE_DATATYPE(UAObject)
+	ADD_DATATYPE(UAObject)
 	
 public:
+	virtual void UpdateFilter(UFilterElement* _pFilterElement) PURE_VIRTUAL(UFilter::UpdateFilter, );
+	virtual FText GetFilterName() { return FText::GetEmpty(); }
+	
 	virtual void Initialize() PURE_VIRTUAL(UFilter::Initialize, );
 	UFUNCTION()
 	virtual UClass* GetDataTypeClass() const PURE_VIRTUAL(UFilter::GetDataTypeClass, return nullptr;);
 	virtual int32 GetIndex() const PURE_VIRTUAL(UFilter::GetIndex, return -1;);
+	virtual void BuildWidget(UFilterWidget* _pFilterWidget) PURE_VIRTUAL(UFilter::BuildWidget, );
 };

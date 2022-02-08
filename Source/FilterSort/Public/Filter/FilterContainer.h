@@ -2,12 +2,15 @@
 #include "Filter.h"
 #include "FilterInterface.h"
 #include "FilterSortModule.h"
+#include "GameDelegates.h"
 
 template <typename T>
 struct TFilterContainer
 {
 	TFilterContainer(UObject* Outer)
 	{
+		FGameDelegates::Get().GetEndPlayMapDelegate().AddRaw(this, &TFilterContainer<T>::Destroy);
+		
 		if (FFilterSortModule* module = FModuleManager::GetModulePtr<FFilterSortModule>("FilterSort"))
 		{
 			if (TArray<UClass*>* p = module->classes.Find(T::StaticClass()))
@@ -35,14 +38,30 @@ struct TFilterContainer
 		}
 	}
 
-	void UpdateFilter(TFilterInterface<T>* _pFilterInterface)
+	void Destroy()
 	{
-		const int32 nIndex = _pFilterInterface->GetIndex();
+		for (UFilter* Filter : arrr)
+		{
+			if (Filter->IsRooted())
+			{
+				Filter->RemoveFromRoot();
+			}
+		}
+		FGameDelegates::Get().GetEndPlayMapDelegate().RemoveAll(this);
+	}
+
+	void UpdateFilter(UFilterElement* _pFilterElement)
+	{
+		const int32 nIndex = _pFilterElement->GetIndex();
 
 		if (arrr.IsValidIndex(nIndex))
 		{
-			arrr[nIndex]->UpdateFilter(_pFilterInterface);
+			arrr[nIndex]->UpdateFilter(_pFilterElement);
 		}
+
+		DECLARE_DELEGATE_OneParam(FOnOnOn, UFilterElement*)
+		FOnOnOn onon = FOnOnOn::CreateRaw(this, &TFilterContainer::UpdateFilter);
+		onon.Execute(nullptr);
 
 		int32 mn = 53;
 	}
