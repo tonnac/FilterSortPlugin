@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Filter.h"
+#include "FilterSortDelegate.h"
 #include "FilterInterface.h"
 #include "FilterSortModule.h"
 #include "GameDelegates.h"
@@ -15,11 +16,12 @@ struct TFilterContainer
 		{
 			if (TArray<UClass*>* p = module->classes.Find(T::StaticClass()))
 			{
+				FOnUpdateFilter aa = FOnUpdateFilter::CreateRaw(this, &TFilterContainer<T>::UpdateFilter);
 				for(UClass* c : *p)
 				{
 					if (UFilter* NewContainer = NewObject<UFilter>(Outer, c))
 					{
-						NewContainer->Initialize();
+						NewContainer->Initialize(aa);
 						NewContainer->AddToRoot();
 						arrr.Emplace(NewContainer);
 					}
@@ -58,10 +60,6 @@ struct TFilterContainer
 		{
 			arrr[nIndex]->UpdateFilter(_pFilterElement);
 		}
-
-		DECLARE_DELEGATE_OneParam(FOnOnOn, UFilterElement*)
-		FOnOnOn onon = FOnOnOn::CreateRaw(this, &TFilterContainer::UpdateFilter);
-		onon.Execute(nullptr);
 
 		int32 mn = 53;
 	}

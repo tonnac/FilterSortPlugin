@@ -6,6 +6,7 @@
 #include "FilterSortModule.h"
 #include "UObject/Object.h"
 #include "FilterElement.h"
+#include "FilterSortDelegate.h"
 #include "Filter/FilterFunctor.h"
 #include "Filter.generated.h"
 
@@ -46,9 +47,15 @@ public:
 	virtual void UpdateFilter(UFilterElement* _pFilterElement) PURE_VIRTUAL(UFilter::UpdateFilter, );
 	virtual FText GetFilterName() { return FText::GetEmpty(); }
 	
-	virtual void Initialize() PURE_VIRTUAL(UFilter::Initialize, );
+	virtual void Initialize(const FOnUpdateFilter& _Delegate)
+	{
+		OnUpdateFilter = _Delegate;
+	}
 	UFUNCTION()
 	virtual UClass* GetDataTypeClass() const PURE_VIRTUAL(UFilter::GetDataTypeClass, return nullptr;);
 	virtual int32 GetIndex() const PURE_VIRTUAL(UFilter::GetIndex, return -1;);
 	virtual void BuildWidget(UFilterWidget* _pFilterWidget) PURE_VIRTUAL(UFilter::BuildWidget, );
+
+public:
+	FOnUpdateFilter OnUpdateFilter;
 };

@@ -3,6 +3,7 @@
 
 #include "Widget/FilterElementList.h"
 
+#include "FilterElement.h"
 #include "Components/Button.h"
 #include "Components/TileView.h"
 
