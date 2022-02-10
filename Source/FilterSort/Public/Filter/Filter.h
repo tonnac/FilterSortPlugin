@@ -22,14 +22,18 @@ public:																																				\
 	virtual int32 GetIndex() const override { return Index; }
 
 #define IMPLEMENT_HASCONTAINER_FILTER(TDataType, TClass, Index) \
-IMPLEMENT_COMMON_FILTER(TDataType, TClass, Index)				 \
-public:													 \
+IMPLEMENT_COMMON_FILTER(TDataType, TClass, Index)				\
+public:															\
+	UPROPERTY()													\
+	TArray<UFilterElement*> Filters;							\
 	TSet<TWeakObjectPtr<UFilterElement>> CurrentFilters;
 
-#define IMPLEMENT_FILTER(TDataType, TClass, Index)	\
-IMPLEMENT_COMMON_FILTER(TDataType, TClass, Index)	\
-public:										\
-	TWeakObjectPtr<UFilterElement> CurrentFilter;
+#define IMPLEMENT_FILTER(TDataType, TClass, Index)				\
+IMPLEMENT_COMMON_FILTER(TDataType, TClass, Index)				\
+public:															\
+	UPROPERTY()													\
+	UFilterElement* Filter = nullptr;							\
+	TWeakObjectPtr<UFilterElement> CurrentFilter = nullptr;
 
 class UAObject;
 /**

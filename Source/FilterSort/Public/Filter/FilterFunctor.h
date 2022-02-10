@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "FilterInterface.h"
 #include "Components/Button.h"
 #include "Components/CheckBox.h"
 #include "Components/TextBlock.h"
