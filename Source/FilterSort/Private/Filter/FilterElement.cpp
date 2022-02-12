@@ -3,12 +3,3 @@
 
 #include "FilterElement.h"
 
-void UFilterElement::Initialize(int32 InIndex, void* Src)
-{
-	Index = InIndex;
-}
-
-int32 UFilterElement::GetIndex() const
-{
-	return Index;
-}

@@ -24,7 +24,7 @@ public:
 	template <typename T>
 	void SetFilter(TFilterContainer<T>* _pFilterContainer)
 	{
-		ListView->SetListItems(_pFilterContainer->arrr);
+		ListView->SetListItems(_pFilterContainer->Filters);
 	}
 	
 private:

@@ -36,6 +36,6 @@ void UFilterWidget::OnClicked_FilterElement(UObject* _pObject)
 {
 	if (UFilterElement* pFilterElement = Cast<UFilterElement>(_pObject))
 	{
-		pFilter->OnUpdateFilter.ExecuteIfBound(pFilterElement);
+		pFilter->UpdateFilter(pFilterElement);
 	}
 }

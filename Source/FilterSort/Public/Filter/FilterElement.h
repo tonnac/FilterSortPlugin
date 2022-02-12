@@ -27,14 +27,8 @@ public:
 	ADD_DATATYPE(UAObject)
 	
 public:
-	virtual void Initialize(int32 InIndex, void* Src);
-
-public:
-	int32 GetIndex() const;
-
+	virtual void Initialize(void* Src) PURE_VIRTUAL(UFilterElement::Initialize, );
+	
 public:
 	FOOO oo;
-
-private:
-	int32 Index = 0;
 };
