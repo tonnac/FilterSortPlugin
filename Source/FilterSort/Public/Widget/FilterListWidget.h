@@ -24,8 +24,12 @@ public:
 	template <typename T>
 	void SetFilter(TFilterContainer<T>* _pFilterContainer)
 	{
-		ListView->SetListItems(_pFilterContainer->Filters);
+		_pFilterContainer->GetUpdateFilter().AddUObject(this, &UFilterListWidget::OnUpdateFilter);
+		ListView->SetListItems(_pFilterContainer->GetFilters());
 	}
+
+private:
+	void OnUpdateFilter() const;
 	
 private:
 	UPROPERTY(meta=(BindWidget, EntryClass = FilterWidget))

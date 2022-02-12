@@ -34,6 +34,7 @@ struct TFilterContainer : public FGCObject
 		}
 	}
 
+public:
 	void ApplyFilter(TArray<T*>& Objects)
 	{
 		Objects.RemoveAll(*this);
@@ -57,6 +58,7 @@ struct TFilterContainer : public FGCObject
 	}
 
 	FSimpleMulticastDelegate& GetUpdateFilter() { return OnUpdateFilter; }
+	const TArray<UFilter*>& GetFilters() const { return Filters; }
 
 private:
 	void UpdateFilter(UFilter* _pFilter, UFilterElement* _pFilterElement) const
@@ -70,9 +72,7 @@ private:
 		Collector.AddReferencedObjects(Filters);
 	}
 
-public:
-	TArray<UFilter*> Filters;
-
 private:
+	TArray<UFilter*> Filters;
 	FSimpleMulticastDelegate OnUpdateFilter;
 };

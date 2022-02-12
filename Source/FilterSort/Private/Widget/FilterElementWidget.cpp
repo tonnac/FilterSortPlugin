@@ -24,5 +24,6 @@ void UFilterElementWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 			WidgetSwitcher->SetActiveWidgetIndex(TextIndex);
 			Text->SetText(FilterElement->oo.KK);
 		}
+		ActiveImage->SetColorAndOpacity(FilterElement->oo.bActive ? ActiveColor : InActiveColor);
 	}
 }

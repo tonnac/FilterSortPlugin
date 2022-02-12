@@ -8,3 +8,8 @@ void UFilterListWidget::NativeConstruct()
 	Super::NativeConstruct();
 	ListView->SetScrollbarVisibility(ESlateVisibility::Collapsed);
 }
+
+void UFilterListWidget::OnUpdateFilter() const
+{
+	ListView->RegenerateAllEntries();
+}

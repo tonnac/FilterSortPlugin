@@ -25,11 +25,20 @@ public:
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 
 private:
+	UPROPERTY(EditAnywhere)
+	FLinearColor ActiveColor;
+
+	UPROPERTY(EditAnywhere)
+    FLinearColor InActiveColor;
+	
 	UPROPERTY(meta=(BindWidget))
 	UWidgetSwitcher* WidgetSwitcher = nullptr;
 
 	UPROPERTY(meta=(BindWidget))
 	UImage* Image = nullptr;
+
+	UPROPERTY(meta=(BindWidget))
+	UImage* ActiveImage = nullptr;
 
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* Text = nullptr;

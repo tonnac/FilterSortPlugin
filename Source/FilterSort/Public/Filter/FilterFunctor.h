@@ -31,7 +31,8 @@ struct TFilterFunctor
 
 	static void BuildWidget(T* _pFilter, UFilterWidget* _pFilterWidget)
 	{
-		
+		_pFilterWidget->CheckBox->SetCheckedState(_pFilter->IsEmpty() ? ECheckBoxState::Unchecked : ECheckBoxState::Checked);
+		_pFilterWidget->TextBlock->SetText(_pFilter->GetFilterName());
 	}
 };
 
@@ -62,10 +63,12 @@ struct TFilterFunctor <T, decltype((void)T::CurrentFilters, (int32)0)>
 		if (_pFilter->CurrentFilters.Contains(_pFilterElement))
 		{
 			_pFilter->CurrentFilters.Remove(_pFilterElement);
+			_pFilterElement->oo.bActive = false;
 		}
 		else
 		{
 			_pFilter->CurrentFilters.Emplace(_pFilterElement);
+			_pFilterElement->oo.bActive = true;
 		}
 	}
 
@@ -78,6 +81,13 @@ struct TFilterFunctor <T, decltype((void)T::CurrentFilters, (int32)0)>
 	{
 		_pFilterWidget->CheckBox->SetCheckedState(_pFilter->IsEmpty() ? ECheckBoxState::Unchecked : ECheckBoxState::Checked);
 		_pFilterWidget->TextBlock->SetText(_pFilter->GetFilterName());
-		_pFilterWidget->FilterElementList->TileView->SetListItems(_pFilter->Filters);
+		if (_pFilterWidget->FilterElementList->TileView->GetNumItems() > 0)
+		{
+			_pFilterWidget->FilterElementList->TileView->RegenerateAllEntries();
+		}
+		else
+		{
+			_pFilterWidget->FilterElementList->TileView->SetListItems(_pFilter->Filters);	
+		}
 	}
 };

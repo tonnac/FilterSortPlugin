@@ -20,15 +20,15 @@ class FILTERSORT_API UFilterWidget : public UUserWidget, public IUserObjectListE
 {
 	GENERATED_BODY()
 
-	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 	virtual void NativeOnInitialized() override;
-	
-	
+	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
+
+
 private:
 	UFUNCTION()
 	void OnClicked();
 
-	void OnClicked_FilterElement(UObject* _pObject);
+	void OnClicked_FilterElement(UObject* _pObject) const;
 	
 public:
 	UPROPERTY(meta=(BindWidget))
