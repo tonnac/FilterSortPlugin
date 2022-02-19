@@ -13,7 +13,7 @@ class UTestObjectFooFilterElement : public UFilterElement
 	GENERATED_BODY()
 public:
 	virtual void Initialize(void* Src) override;
-	virtual bool operator()(const UTestObject* TestObject) override;
+	virtual bool IsSatisfied(const UTestObject* TestObject) override;
 	
 private:
 	int32 Foo = 0;
@@ -25,7 +25,7 @@ class UTestObjectBarFilterElement : public UFilterElement
 	GENERATED_BODY()
 public:
 	virtual void Initialize(void* Src) override;
-	virtual bool operator()(const UTestObject* TestObject) override;
+	virtual bool IsSatisfied(const UTestObject* TestObject) override;
 
 private:
 	int32 Bar = 0;
@@ -37,7 +37,7 @@ class UTestObjectBazFilterElement : public UFilterElement
 	GENERATED_BODY()
 public:
 	virtual void Initialize(void* Src) override;
-	virtual bool operator()(const UTestObject* TestObject) override;
+	virtual bool IsSatisfied(const UTestObject* TestObject) override;
 
 private:
 	int32 Baz = 0;
@@ -49,7 +49,7 @@ class UTestObjectQuxFilterElement : public UFilterElement
 	GENERATED_BODY()
 public:
 	virtual void Initialize(void* Src) override;
-	virtual bool operator()(const UTestObject* TestObject) override;
+	virtual bool IsSatisfied(const UTestObject* TestObject) override;
 
 private:
 	int32 Qux = 0;

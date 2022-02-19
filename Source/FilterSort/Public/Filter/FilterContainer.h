@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include <algorithm>
+
 #include "Filter.h"
 #include "FilterSortModule.h"
 
@@ -47,22 +49,37 @@ public:
 	
 	bool operator()(const T* _pData) const
 	{
-		for (int32 i = 0; i < Filters.Num(); ++i)
-        {
-        	if (Filters[i]->operator()(_pData))
-        	{
-        		return true;
-        	}
-        }
-        return false;
+		if (CurrentFilters.Num() == 0)
+		{
+			return false;
+		}
+		
+		for (TWeakObjectPtr<UFilter> Filter : CurrentFilters)
+		{
+			if (Filter.IsValid() && Filter->IsSatisfied(_pData))
+			{
+				return false;
+			}			
+		}
+		
+        return true;
 	}
 
 	FSimpleMulticastDelegate& GetUpdateFilter() { return OnUpdateFilter; }
 	const TArray<UFilter*>& GetFilters() const { return Filters; }
 
 private:
-	void UpdateFilter(UFilter* _pFilter, UFilterElement* _pFilterElement) const
+	void UpdateFilter(UFilter* Filter, UFilterElement* FilterElement)
 	{
+		if (CurrentFilters.Contains(Filter) && Filter->IsEmpty())
+		{
+			CurrentFilters.Remove(Filter);
+		}
+		else if (!CurrentFilters.Contains(Filter) && !Filter->IsEmpty())
+		{
+			CurrentFilters.Emplace(Filter);
+		}
+	
 		OnUpdateFilter.Broadcast();
 	}
 	
@@ -73,6 +90,7 @@ private:
 	}
 
 private:
+	TSet<TWeakObjectPtr<UFilter>> CurrentFilters;
 	TArray<UFilter*> Filters;
 	FSimpleMulticastDelegate OnUpdateFilter;
 };

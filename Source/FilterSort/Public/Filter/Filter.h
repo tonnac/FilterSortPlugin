@@ -33,16 +33,16 @@ public:
 
 public:
 	template <typename T>
-	bool operator()(const T* _pData)
+	bool IsSatisfied(const T* _pData)
 	{
 		if (IsEmpty())
 		{
 			return false;
 		}
 
-		for (const TWeakObjectPtr<UFilterElement>& FilterElement : CurrentFilters)
+		for (const TWeakObjectPtr<UFilterElement>& FilterElement : CurrentFilterElements)
 		{
-			if (FilterElement.IsValid() && FilterElement->operator()(_pData))
+			if (FilterElement.IsValid() && FilterElement->IsSatisfied(_pData))
 			{
 				return true;
 			}
@@ -66,5 +66,5 @@ public:
 protected:
 	UPROPERTY()
 	TArray<UFilterElement*> FilterElements;
-	TSet<TWeakObjectPtr<UFilterElement>> CurrentFilters;	
+	TSet<TWeakObjectPtr<UFilterElement>> CurrentFilterElements;	
 };

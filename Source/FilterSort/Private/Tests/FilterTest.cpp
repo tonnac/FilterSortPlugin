@@ -46,7 +46,7 @@ bool TestObjectFooFilter::RunTest(const FString& Parameters)
 		const int32 OriginNum = Copy.Num();
 		FilterContainer->ApplyFilter(Copy);
 
-		TestEqual(TEXT("Filter Result"), Copy.Num(), OriginNum - Values[i]);
+		TestEqual(TEXT("Filter Result"), Copy.Num(), Values[i]);
 
 		Filter->UpdateFilter(FilterElement);
 		FilterContainer->ApplyFilter(Copy1);
@@ -85,7 +85,7 @@ bool TestObjectBarFilter::RunTest(const FString& Parameters)
 		const int32 OriginNum = Copy.Num();
 		FilterContainer->ApplyFilter(Copy);
 
-		TestEqual(TEXT("Filter Result"), Copy.Num(), OriginNum - Values[i]);
+		TestEqual(TEXT("Filter Result"), Copy.Num(), Values[i]);
 
 		Filter->UpdateFilter(FilterElement);
 		FilterContainer->ApplyFilter(Copy1);
@@ -124,7 +124,7 @@ bool TestObjectBazFilter::RunTest(const FString& Parameters)
 		const int32 OriginNum = Copy.Num();
 		FilterContainer->ApplyFilter(Copy);
 
-		TestEqual(TEXT("Filter Result"), Copy.Num(), OriginNum - Values[i]);
+		TestEqual(TEXT("Filter Result"), Copy.Num(), Values[i]);
 
 		Filter->UpdateFilter(FilterElement);
 		FilterContainer->ApplyFilter(Copy1);
@@ -163,7 +163,7 @@ bool TestObjectQuxFilter::RunTest(const FString& Parameters)
 		const int32 OriginNum = Copy.Num();
 		FilterContainer->ApplyFilter(Copy);
 
-		TestEqual(TEXT("Filter Result"), Copy.Num(), OriginNum - Values[i]);
+		TestEqual(TEXT("Filter Result"), Copy.Num(), Values[i]);
 
 		Filter->UpdateFilter(FilterElement);
 		FilterContainer->ApplyFilter(Copy1);
@@ -188,16 +188,16 @@ bool TestObjectCombinationFilter::RunTest(const FString& Parameters)
 
 	TArray<int32> TargetValues = { TargetFooValue, TargetBarValue, TargetBazValue, TargetQuxValue };
 
-	int32 NotFilteredObjectNumber = 0;
+	int32 FilteredObjectNumber = 0;
 	
 	for (const UTestObject* Object : Objects)
 	{
-		if (Object->Foo != TargetFooValue &&
-			Object->Bar != TargetBarValue &&
-			Object->Baz != TargetBazValue &&
-			Object->Qux != TargetQuxValue)
+		if (Object->Foo == TargetFooValue ||
+			Object->Bar == TargetBarValue ||
+			Object->Baz == TargetBazValue ||
+			Object->Qux == TargetQuxValue)
 		{
-			NotFilteredObjectNumber++;
+			FilteredObjectNumber++;
 		}
 	}
 
@@ -217,7 +217,7 @@ bool TestObjectCombinationFilter::RunTest(const FString& Parameters)
 	UpdateFilter();
 	FilterContainer->ApplyFilter(Copy);
 
-	TestEqual(TEXT("Filter Result"), Copy.Num(), NotFilteredObjectNumber);
+	TestEqual(TEXT("Filter Result"), Copy.Num(), FilteredObjectNumber);
 
 	UpdateFilter();
 	FilterContainer->ApplyFilter(Copy1);

@@ -7,7 +7,7 @@
 
 #define ADD_DATATYPE(TDataType)													\
 	public:																		\
-		virtual bool operator()(const TDataType* _pData)	{ return false;	}
+		virtual bool IsSatisfied(const TDataType* _pData) { return false; }
 
 DECLARE_LOG_CATEGORY_EXTERN(LogFilterSort, Log, All)
 

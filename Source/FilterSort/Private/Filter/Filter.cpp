@@ -5,14 +5,14 @@
 
 void UFilter::UpdateFilter(UFilterElement* _pFilterElement)
 {
-	if (CurrentFilters.Contains(_pFilterElement))
+	if (CurrentFilterElements.Contains(_pFilterElement))
 	{
-		CurrentFilters.Remove(_pFilterElement);
+		CurrentFilterElements.Remove(_pFilterElement);
 		_pFilterElement->oo.bActive = false;
 	}
 	else
 	{
-		CurrentFilters.Emplace(_pFilterElement);
+		CurrentFilterElements.Emplace(_pFilterElement);
 		_pFilterElement->oo.bActive = true;
 	}
 		
@@ -21,7 +21,7 @@ void UFilter::UpdateFilter(UFilterElement* _pFilterElement)
 
 void UFilter::EmptyFilter()
 {
-	for (auto Iter = CurrentFilters.CreateIterator(); Iter; ++Iter)
+	for (auto Iter = CurrentFilterElements.CreateIterator(); Iter; ++Iter)
 	{
 		if (Iter->IsValid())
 		{
@@ -34,7 +34,7 @@ void UFilter::EmptyFilter()
 
 bool UFilter::IsEmpty() const
 {
-	return CurrentFilters.Num() == 0;
+	return CurrentFilterElements.Num() == 0;
 }
 
 int32 UFilter::GetFilterNum() const
