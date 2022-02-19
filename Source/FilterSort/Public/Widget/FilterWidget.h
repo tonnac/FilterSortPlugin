@@ -7,6 +7,7 @@
 #include "Blueprint/UserWidget.h"
 #include "FilterWidget.generated.h"
 
+class UFilterElement;
 class UFilter;
 class UButton;
 class UFilterElementList;
@@ -25,10 +26,15 @@ class FILTERSORT_API UFilterWidget : public UUserWidget, public IUserObjectListE
 
 
 private:
+	void SetFilterElements();
+	
+private:
 	UFUNCTION()
 	void OnClicked();
+	void OnClicked_FilterElement(UFilterElement* FilterElement) const;
 
-	void OnClicked_FilterElement(UObject* _pObject) const;
+public:
+	FSimpleDelegate SimpleDelegate;
 	
 public:
 	UPROPERTY(meta=(BindWidget))
@@ -44,5 +50,5 @@ public:
 	UFilterElementList* FilterElementList = nullptr;
 
 private:
-	UFilter* pFilter = nullptr;
+	TWeakObjectPtr<UFilter> Filter = nullptr;
 };

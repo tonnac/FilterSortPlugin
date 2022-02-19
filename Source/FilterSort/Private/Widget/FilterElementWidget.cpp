@@ -27,3 +27,8 @@ void UFilterElementWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 		ActiveImage->SetColorAndOpacity(FilterElement->oo.bActive ? ActiveColor : InActiveColor);
 	}
 }
+
+void UFilterElementWidget::BeginDestroy()
+{
+	Super::BeginDestroy();
+}

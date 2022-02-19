@@ -3,3 +3,7 @@
 
 #include "FilterElement.h"
 
+void UFilterElement::BeginDestroy()
+{
+	UObject::BeginDestroy();
+}

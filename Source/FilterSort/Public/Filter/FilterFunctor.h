@@ -33,6 +33,13 @@ struct TFilterFunctor
 	{
 		_pFilterWidget->CheckBox->SetCheckedState(_pFilter->IsEmpty() ? ECheckBoxState::Unchecked : ECheckBoxState::Checked);
 		_pFilterWidget->TextBlock->SetText(_pFilter->GetFilterName());
+		if (!_pFilterWidget->SimpleDelegate.IsBound())
+		{
+			_pFilterWidget->SimpleDelegate.BindLambda([_pFilter]()
+			{
+				_pFilter->UpdateFilter(_pFilter->Filter);
+			});
+		}
 	}
 };
 

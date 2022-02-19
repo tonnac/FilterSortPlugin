@@ -24,6 +24,8 @@ class FILTERSORT_API UFilterElementWidget : public UUserWidget, public IUserObje
 public:
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 
+virtual void BeginDestroy() override;
+	
 private:
 	UPROPERTY(EditAnywhere)
 	FLinearColor ActiveColor;

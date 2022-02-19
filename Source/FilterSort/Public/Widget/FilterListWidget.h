@@ -30,6 +30,14 @@ public:
 
 private:
 	void OnUpdateFilter() const;
+
+	bool BB()
+	{
+		return Getter.Execute(this);
+	}
+
+	DECLARE_DELEGATE_RetVal_OneParam(bool, FGetter, UObject*)
+	FGetter Getter;
 	
 private:
 	UPROPERTY(meta=(BindWidget, EntryClass = FilterWidget))
