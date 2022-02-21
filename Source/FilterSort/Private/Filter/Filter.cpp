@@ -3,23 +3,29 @@
 
 #include "Filter.h"
 
-void UFilter::UpdateFilter(UFilterElement* _pFilterElement)
+void UFilter::UpdateFilter(UFilterElement* FilterElement)
 {
-	if (CurrentFilterElements.Contains(_pFilterElement))
+	if (CurrentFilterElements.Contains(FilterElement))
 	{
-		CurrentFilterElements.Remove(_pFilterElement);
-		_pFilterElement->oo.bActive = false;
+		CurrentFilterElements.Remove(FilterElement);
+		FilterElement->oo.bActive = false;
 	}
 	else
 	{
-		CurrentFilterElements.Emplace(_pFilterElement);
-		_pFilterElement->oo.bActive = true;
+		CurrentFilterElements.Emplace(FilterElement);
+		FilterElement->oo.bActive = true;
 	}
-		
-	OnUpdateFilter.ExecuteIfBound(this, _pFilterElement);
+
+	Super::UpdateFilter(FilterElement);
 }
 
 void UFilter::EmptyFilter()
+{
+	ResetFilter();
+	OnUpdateFilter.ExecuteIfBound(this, nullptr);
+}
+
+void UFilter::ResetFilter()
 {
 	for (auto Iter = CurrentFilterElements.CreateIterator(); Iter; ++Iter)
 	{
@@ -27,14 +33,13 @@ void UFilter::EmptyFilter()
 		{
 			Iter->Get()->oo.bActive = false;
 		}
-		Iter.RemoveCurrent();
 	}
-	OnUpdateFilter.ExecuteIfBound(this, nullptr);
+	CurrentFilterElements.Empty();
 }
 
-bool UFilter::IsEmpty() const
+bool UFilter::IsActive() const
 {
-	return CurrentFilterElements.Num() == 0;
+	return CurrentFilterElements.Num() != 0;
 }
 
 int32 UFilter::GetFilterNum() const

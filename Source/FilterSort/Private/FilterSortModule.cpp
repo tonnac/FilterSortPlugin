@@ -1,6 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "FilterSortModule.h"
+
+#include "AllFilter.h"
 #include "Filter.h"
 
 DEFINE_LOG_CATEGORY(LogFilterSort)
@@ -11,10 +13,11 @@ void FFilterSortModule::StartupModule()
 {
 	for (TObjectIterator<UClass> It; It; ++It)
 	{
-		if (!It->HasAnyClassFlags(EClassFlags::CLASS_Abstract) && It->GetSuperClass() == UFilter::StaticClass())
+		const bool bFilterBase = It->GetSuperClass() == UFilter::StaticClass() || It->GetSuperClass() == UAllFilter::StaticClass();
+		if (!It->HasAnyClassFlags(EClassFlags::CLASS_Abstract) && bFilterBase)
 		{
-			auto defulat = Cast<UFilter>(It->GetDefaultObject());
-			auto dsds = defulat->GetDataTypeClass();
+			auto filterbase = Cast<UFilterBase>(It->GetDefaultObject());
+			auto dsds = filterbase->GetDataTypeClass();
 
 			classes.FindOrAdd(dsds).Emplace(*It);
 			

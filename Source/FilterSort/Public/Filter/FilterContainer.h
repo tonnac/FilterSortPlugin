@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <algorithm>
 
+#include "AllFilter.h"
 #include "Filter.h"
 #include "FilterSortModule.h"
 
@@ -15,15 +16,22 @@ struct TFilterContainer : public FGCObject
 			{
 				for(UClass* c : *p)
 				{
-					if (UFilter* NewContainer = NewObject<UFilter>(Outer, c))
+					if (UFilterBase* NewFilterBase = NewObject<UFilterBase>(Outer, c))
 					{
-						NewContainer->Initialize();
-						NewContainer->OnUpdateFilter.BindRaw(this, &TFilterContainer<T>::UpdateFilter);
-						Filters.Emplace(NewContainer);
+						if (UFilter* NewFilter = Cast<UFilter>(NewFilterBase))
+						{
+							NewFilter->Initialize();
+						}
+						else if (UAllFilter* NewAllFilter = Cast<UAllFilter>(NewFilterBase))
+						{
+							NewAllFilter->GetIsActive.BindRaw(this, &TFilterContainer<T>::GetIsActiveAllFilter);
+						}
+						NewFilterBase->OnUpdateFilter.BindRaw(this, &TFilterContainer<T>::UpdateFilter);
+						Filters.Emplace(NewFilterBase);	
 					}
 				}
 
-				Filters.Sort([](const UFilter& lhs, const UFilter& rhs)
+				Filters.Sort([](const UFilterBase& lhs, const UFilterBase& rhs)
 				{
 					const int32 lIndex = lhs.GetIndex();
 					const int32 rIndex = rhs.GetIndex();
@@ -46,6 +54,15 @@ public:
 	{
 		Objects.RemoveAll(*this);
 	}
+
+	void Empty()
+	{
+		for (const TWeakObjectPtr<UFilter> CurrentFilter : CurrentFilters)
+		{
+			CurrentFilter->ResetFilter();
+		}
+		CurrentFilters.Empty();
+	}
 	
 	bool operator()(const T* _pData) const
 	{
@@ -54,33 +71,53 @@ public:
 			return false;
 		}
 		
-		for (TWeakObjectPtr<UFilter> Filter : CurrentFilters)
+		for (const TWeakObjectPtr<UFilter> Filter : CurrentFilters)
 		{
-			if (Filter.IsValid() && Filter->IsSatisfied(_pData))
+			if (Filter->IsSatisfied(_pData))
 			{
 				return false;
 			}			
 		}
+
+		for (TWeakObjectPtr<UFilter> Filter : OptionFilters)
+        {
+        	if (Filter.IsValid() && Filter->IsSatisfied(_pData))
+        	{
+        		return false;
+        	}			
+        }
 		
         return true;
 	}
 
 	FSimpleMulticastDelegate& GetUpdateFilter() { return OnUpdateFilter; }
-	const TArray<UFilter*>& GetFilters() const { return Filters; }
+	const TArray<UFilterBase*>& GetFilters() const { return Filters; }
 
 private:
-	void UpdateFilter(UFilter* Filter, UFilterElement* FilterElement)
+	void UpdateFilter(UFilterBase* FilterBase, UFilterElement* FilterElement)
 	{
-		if (CurrentFilters.Contains(Filter) && Filter->IsEmpty())
+		if (UFilter* Filter = Cast<UFilter>(FilterBase))
 		{
-			CurrentFilters.Remove(Filter);
+			if (CurrentFilters.Contains(Filter) && !Filter->IsActive())
+			{
+				CurrentFilters.Remove(Filter);
+			}
+			else if (!CurrentFilters.Contains(Filter) && Filter->IsActive())
+			{
+				CurrentFilters.Emplace(Filter);
+			}
 		}
-		else if (!CurrentFilters.Contains(Filter) && !Filter->IsEmpty())
+		else
 		{
-			CurrentFilters.Emplace(Filter);
+			Empty();
 		}
 	
 		OnUpdateFilter.Broadcast();
+	}
+
+	bool GetIsActiveAllFilter() const
+	{
+		return CurrentFilters.Num() == 0;
 	}
 	
 	/** FGCObject implementation */
@@ -90,7 +127,9 @@ private:
 	}
 
 private:
+	TWeakObjectPtr<UFilter> AllFilter = nullptr;
 	TSet<TWeakObjectPtr<UFilter>> CurrentFilters;
-	TArray<UFilter*> Filters;
+	TSet<TWeakObjectPtr<UFilter>> OptionFilters;
+	TArray<UFilterBase*> Filters;
 	FSimpleMulticastDelegate OnUpdateFilter;
 };

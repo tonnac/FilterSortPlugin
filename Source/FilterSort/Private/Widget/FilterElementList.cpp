@@ -27,7 +27,34 @@ void UFilterElementList::BeginDestroy()
 
 void UFilterElementList::SetListItems(const TArray<UFilterElement*>& ElementLists) const
 {
-	TileView->SetListItems(ElementLists);
+	TArray<UObject*> ListItems = TileView->GetListItems();
+
+	bool bEqualListItems = true;
+
+	if (ListItems.Num() != ElementLists.Num())
+	{
+		bEqualListItems = false;
+	}
+	else
+	{
+		for (int32 i = 0; i < ListItems.Num(); ++i)
+		{
+			if (ListItems[i] != ElementLists[i])
+			{
+				bEqualListItems = false;
+				break;
+			}
+		} 
+	}
+
+	if (bEqualListItems)
+	{
+		TileView->RegenerateAllEntries();
+	}
+	else
+	{
+		TileView->SetListItems(ElementLists);
+	}
 }
 
 void UFilterElementList::ScrollToTop() const

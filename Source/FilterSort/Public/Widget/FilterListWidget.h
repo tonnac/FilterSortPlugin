@@ -22,22 +22,14 @@ class FILTERSORT_API UFilterListWidget : public UUserWidget
 	
 public:	
 	template <typename T>
-	void SetFilter(TFilterContainer<T>* _pFilterContainer)
+	void SetFilter(TFilterContainer<T>* FilterContainer)
 	{
-		_pFilterContainer->GetUpdateFilter().AddUObject(this, &UFilterListWidget::OnUpdateFilter);
-		ListView->SetListItems(_pFilterContainer->GetFilters());
+		FilterContainer->GetUpdateFilter().AddUObject(this, &UFilterListWidget::OnUpdateFilter);
+		ListView->SetListItems(FilterContainer->GetFilters());
 	}
 
 private:
 	void OnUpdateFilter() const;
-
-	bool BB()
-	{
-		return Getter.Execute(this);
-	}
-
-	DECLARE_DELEGATE_RetVal_OneParam(bool, FGetter, UObject*)
-	FGetter Getter;
 	
 private:
 	UPROPERTY(meta=(BindWidget, EntryClass = FilterWidget))

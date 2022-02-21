@@ -3,39 +3,29 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Object.h"
+#include "FilterBase.h"
 #include "FilterElement.h"
 #include "Filter/FilterFunctor.h"
 #include "Filter.generated.h"
 
+#define IMPLEMENT_ISSATISFIED(TDataType)							\
+virtual bool IsSatisfied(const TDataType* _pData) override			\
+{																	\
+	return IsSatisfied_Private(_pData);								\
+}
 
-#define IMPLEMENT_COMMON_FILTER(TDataType, Index)																	\
-private:																													\
-	virtual UClass* GetDataTypeClass() const override { return TDataType::StaticClass(); }									\
-public:																														\
-	virtual int32 GetIndex() const override { return Index; }
-
-class UAObject;
 /**
  * 
  */
 UCLASS(Abstract)
-class FILTERSORT_API UFilter : public UObject
+class FILTERSORT_API UFilter : public UFilterBase
 {
 	GENERATED_BODY()
-public:
-	virtual FText GetFilterName() PURE_VIRTUAL(UFilter::GetFilterName, return FText::GetEmpty(););
-	
-	virtual void Initialize() PURE_VIRTUAL(UFilter::Initialize, )
-	UFUNCTION()
-	virtual UClass* GetDataTypeClass() const PURE_VIRTUAL(UFilter::GetDataTypeClass, return nullptr;);
-	virtual int32 GetIndex() const PURE_VIRTUAL(UFilter::GetIndex, return -1;);
-
 public:
 	template <typename T>
 	bool IsSatisfied(const T* _pData)
 	{
-		if (IsEmpty())
+		if (IsActive())
 		{
 			return false;
 		}
@@ -51,18 +41,18 @@ public:
 		return false;
 	}
 	
-	void UpdateFilter(UFilterElement* _pFilterElement);
+
+	virtual void Initialize() PURE_VIRTUAL(UFilter::Initialize,)
+	virtual void ResetFilter();
+
+	virtual void UpdateFilter(UFilterElement* FilterElement) override;
 	void EmptyFilter();
-	
-	bool IsEmpty() const;
+
+	virtual bool IsActive() const override;
 	int32 GetFilterNum() const;
 
 	const TArray<UFilterElement*>& GetFilterElements(); 
 	
-public:
-	DECLARE_DELEGATE_TwoParams(FOnUpdateFilter, UFilter*, UFilterElement*)
-	FOnUpdateFilter OnUpdateFilter;
-
 protected:
 	UPROPERTY()
 	TArray<UFilterElement*> FilterElements;

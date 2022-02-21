@@ -3,8 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FilterSortModule.h"
-#include "UObject/Object.h"
+#include "FilterBase.h"
 #include "FilterElement.generated.h"
 
 class UAObject;
