@@ -37,21 +37,17 @@ bool TestObjectFooFilter::RunTest(const FString& Parameters)
 
 	for (int32 i = 0; i < 5; ++i)
 	{
-		auto Copy = Objects;
-		auto Copy1 = Objects;
-		
 		UFilterElement* FilterElement = FilterElements[i];
 		Filter->UpdateFilter(FilterElement);
+		
+		TSet<UTestObject*> FilteredObjects = FilterContainer->ApplyFilter(Objects);
 
-		const int32 OriginNum = Copy.Num();
-		FilterContainer->ApplyFilter(Copy);
-
-		TestEqual(TEXT("Filter Result"), Copy.Num(), Values[i]);
+		TestEqual(TEXT("Filter Result"), FilteredObjects.Num(), Values[i]);
 
 		Filter->UpdateFilter(FilterElement);
-		FilterContainer->ApplyFilter(Copy1);
+		FilteredObjects = FilterContainer->ApplyFilter(Objects);
 
-		TestEqual(TEXT("Filter Result"), Copy1.Num(), OriginNum);	
+		TestEqual(TEXT("Filter Result"), FilteredObjects.Num(), Objects.Num());	
 	}
 	return true;
 }
@@ -76,21 +72,17 @@ bool TestObjectBarFilter::RunTest(const FString& Parameters)
 	
 	for (int32 i = 0; i < 5; ++i)
 	{
-		auto Copy = Objects;
-		auto Copy1 = Objects;
-		
 		UFilterElement* FilterElement = FilterElements[i];
 		Filter->UpdateFilter(FilterElement);
+		
+		TSet<UTestObject*> FilteredObjects = FilterContainer->ApplyFilter(Objects);
 
-		const int32 OriginNum = Copy.Num();
-		FilterContainer->ApplyFilter(Copy);
-
-		TestEqual(TEXT("Filter Result"), Copy.Num(), Values[i]);
+		TestEqual(TEXT("Filter Result"), FilteredObjects.Num(), Values[i]);
 
 		Filter->UpdateFilter(FilterElement);
-		FilterContainer->ApplyFilter(Copy1);
+		FilteredObjects = FilterContainer->ApplyFilter(Objects);
 
-		TestEqual(TEXT("Filter Result"), Copy1.Num(), OriginNum);	
+		TestEqual(TEXT("Filter Result"), FilteredObjects.Num(), Objects.Num());	
 	}
 	return true;
 }
@@ -115,21 +107,17 @@ bool TestObjectBazFilter::RunTest(const FString& Parameters)
 	
 	for (int32 i = 0; i < 5; ++i)
 	{
-		auto Copy = Objects;
-		auto Copy1 = Objects;
-		
 		UFilterElement* FilterElement = FilterElements[i];
 		Filter->UpdateFilter(FilterElement);
 
-		const int32 OriginNum = Copy.Num();
-		FilterContainer->ApplyFilter(Copy);
+		TSet<UTestObject*> FilteredObjects = FilterContainer->ApplyFilter(Objects);
 
-		TestEqual(TEXT("Filter Result"), Copy.Num(), Values[i]);
+		TestEqual(TEXT("Filter Result"), FilteredObjects.Num(), Values[i]);
 
 		Filter->UpdateFilter(FilterElement);
-		FilterContainer->ApplyFilter(Copy1);
+		FilteredObjects = FilterContainer->ApplyFilter(Objects);
 
-		TestEqual(TEXT("Filter Result"), Copy1.Num(), OriginNum);	
+		TestEqual(TEXT("Filter Result"), FilteredObjects.Num(), Objects.Num());	
 	}
 	return true;
 }
@@ -154,21 +142,16 @@ bool TestObjectQuxFilter::RunTest(const FString& Parameters)
 	
 	for (int32 i = 0; i < 5; ++i)
 	{
-		auto Copy = Objects;
-		auto Copy1 = Objects;
-		
 		UFilterElement* FilterElement = FilterElements[i];
 		Filter->UpdateFilter(FilterElement);
+		TSet<UTestObject*> FilteredObjects = FilterContainer->ApplyFilter(Objects);
 
-		const int32 OriginNum = Copy.Num();
-		FilterContainer->ApplyFilter(Copy);
-
-		TestEqual(TEXT("Filter Result"), Copy.Num(), Values[i]);
+		TestEqual(TEXT("Filter Result"), FilteredObjects.Num(), Values[i]);
 
 		Filter->UpdateFilter(FilterElement);
-		FilterContainer->ApplyFilter(Copy1);
+		FilteredObjects = FilterContainer->ApplyFilter(Objects);
 
-		TestEqual(TEXT("Filter Result"), Copy1.Num(), OriginNum);	
+		TestEqual(TEXT("Filter Result"), FilteredObjects.Num(), Objects.Num());	
 	}
 	return true;
 }
@@ -210,19 +193,16 @@ bool TestObjectCombinationFilter::RunTest(const FString& Parameters)
 			Filter->UpdateFilter(FilterElement);
 		}
 	};
-	
-	auto Copy = Objects;
-	auto Copy1 = Objects;
 
 	UpdateFilter();
-	FilterContainer->ApplyFilter(Copy);
+	TSet<UTestObject*> FilteredObjects = FilterContainer->ApplyFilter(Objects);
 
-	TestEqual(TEXT("Filter Result"), Copy.Num(), FilteredObjectNumber);
+	TestEqual(TEXT("Filter Result"), FilteredObjects.Num(), FilteredObjectNumber);
 
 	UpdateFilter();
-	FilterContainer->ApplyFilter(Copy1);
+	FilteredObjects = FilterContainer->ApplyFilter(Objects);
 
-	TestEqual(TEXT("Filter Result"), Copy1.Num(), Objects.Num());	
+	TestEqual(TEXT("Filter Result"), FilteredObjects.Num(), Objects.Num());	
 	
 	return true;
 }

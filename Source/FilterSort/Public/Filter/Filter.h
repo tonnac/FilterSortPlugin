@@ -25,7 +25,7 @@ public:
 	template <typename T>
 	bool IsSatisfied(const T* _pData)
 	{
-		if (IsActive())
+		if (!IsActive())
 		{
 			return false;
 		}
