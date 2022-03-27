@@ -9,10 +9,12 @@
 /**
  * 
  */
-UCLASS(Abstract)
+UCLASS()
 class FILTERSORT_API UAllFilter : public UFilterBase
 {
 	GENERATED_BODY()
+
+	IMPLEMENT_COMMON_FILTER(UObject, 0)
 	
 public:
 	virtual FText GetFilterName() override;

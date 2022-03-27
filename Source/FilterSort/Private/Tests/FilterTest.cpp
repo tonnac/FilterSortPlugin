@@ -33,7 +33,7 @@ bool TestObjectFooFilter::RunTest(const FString& Parameters)
 	}
 
 	auto Filters = FilterContainer->GetFilters();
-	UFilter* Filter = Cast<UFilter>(Filters[0]);
+	UFilter* Filter = Cast<UFilter>(Filters[1]);
 	TArray<UFilterElement*> FilterElements = Filter->GetFilterElements();
 
 	for (int32 i = 0; i < 5; ++i)
@@ -70,7 +70,7 @@ bool TestObjectBarFilter::RunTest(const FString& Parameters)
 	}
 
 	auto Filters = FilterContainer->GetFilters();
-	UFilter* Filter = Cast<UFilter>(Filters[1]);
+	UFilter* Filter = Cast<UFilter>(Filters[2]);
 	TArray<UFilterElement*> FilterElements = Filter->GetFilterElements();
 	
 	for (int32 i = 0; i < 5; ++i)
@@ -107,7 +107,7 @@ bool TestObjectBazFilter::RunTest(const FString& Parameters)
 	}
 
 	auto Filters = FilterContainer->GetFilters();
-	UFilter* Filter = Cast<UFilter>(Filters[2]);
+	UFilter* Filter = Cast<UFilter>(Filters[3]);
 	TArray<UFilterElement*> FilterElements = Filter->GetFilterElements();
 	
 	for (int32 i = 0; i < 5; ++i)
@@ -144,7 +144,7 @@ bool TestObjectQuxFilter::RunTest(const FString& Parameters)
 	}
 
 	auto Filters = FilterContainer->GetFilters();
-	UFilter* Filter = Cast<UFilter>(Filters[3]);
+	UFilter* Filter = Cast<UFilter>(Filters[4]);
 	TArray<UFilterElement*> FilterElements = Filter->GetFilterElements();
 	
 	for (int32 i = 0; i < 5; ++i)
@@ -195,10 +195,10 @@ bool TestObjectCombinationFilter::RunTest(const FString& Parameters)
 
 	auto UpdateFilter = [FilterContainer = FilterContainer.Get(), TargetValues]()
 	{
-		for (int32 i = 0; i < 4; ++i)
+		for (int32 i = 1; i < 5; ++i)
 		{
 			UFilter* Filter = Cast<UFilter>(FilterContainer->GetFilters()[i]);
-			UFilterElement* FilterElement = Filter->GetFilterElements()[TargetValues[i]];
+			UFilterElement* FilterElement = Filter->GetFilterElements()[TargetValues[i - 1]];
 			Filter->UpdateFilter(FilterElement);
 		}
 	};

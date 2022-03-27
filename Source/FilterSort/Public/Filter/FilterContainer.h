@@ -14,18 +14,18 @@ struct TFilterContainer : public FGCObject
 		{
 			if (TArray<UClass*>* p = module->classes.Find(T::StaticClass()))
 			{
+				if (UAllFilter* NewAllFilter = NewObject<UAllFilter>(Outer, UAllFilter::StaticClass()))
+				{
+					NewAllFilter->GetIsActive.BindRaw(this, &TFilterContainer<T>::GetIsActiveAllFilter);
+					NewAllFilter->OnUpdateFilter.BindRaw(this, &TFilterContainer<T>::UpdateFilter);
+					Filters.Emplace(NewAllFilter);
+				}
+				
 				for(UClass* c : *p)
 				{
 					if (UFilterBase* NewFilterBase = NewObject<UFilterBase>(Outer, c))
 					{
-						if (UFilter* NewFilter = Cast<UFilter>(NewFilterBase))
-						{
-							NewFilter->Initialize();
-						}
-						else if (UAllFilter* NewAllFilter = Cast<UAllFilter>(NewFilterBase))
-						{
-							NewAllFilter->GetIsActive.BindRaw(this, &TFilterContainer<T>::GetIsActiveAllFilter);
-						}
+						NewFilterBase->Initialize();
 						NewFilterBase->OnUpdateFilter.BindRaw(this, &TFilterContainer<T>::UpdateFilter);
 						Filters.Emplace(NewFilterBase);	
 					}
@@ -107,6 +107,7 @@ private:
 				CurrentFilters.Emplace(Filter);
 			}
 		}
+		// All Filter Click
 		else
 		{
 			Empty();

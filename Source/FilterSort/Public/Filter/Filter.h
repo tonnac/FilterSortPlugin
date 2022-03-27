@@ -36,7 +36,7 @@ public:
 	}
 	
 
-	virtual void Initialize();
+	virtual void Initialize() override;
 	virtual void ResetFilter();
 
 	virtual void UpdateFilter(UFilterElement* FilterElement) override;
