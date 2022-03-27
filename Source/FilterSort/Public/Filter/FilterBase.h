@@ -8,9 +8,6 @@
 
 class UFilterElement;
 
-class UAObject;
-class UTestObject;
-
 #define IMPLEMENT_COMMON_FILTER(TDataType, Index)											\
 private:																					\
 	virtual UClass* GetDataTypeClass() const override { return TDataType::StaticClass(); }	\

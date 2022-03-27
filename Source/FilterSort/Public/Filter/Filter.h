@@ -8,12 +8,6 @@
 #include "Filter/FilterFunctor.h"
 #include "Filter.generated.h"
 
-#define IMPLEMENT_ISSATISFIED(TDataType)							\
-virtual bool IsSatisfied(const TDataType* _pData) override			\
-{																	\
-	return IsSatisfied_Private(_pData);								\
-}
-
 /**
  * 
  */
@@ -42,7 +36,7 @@ public:
 	}
 	
 
-	virtual void Initialize() PURE_VIRTUAL(UFilter::Initialize,)
+	virtual void Initialize();
 	virtual void ResetFilter();
 
 	virtual void UpdateFilter(UFilterElement* FilterElement) override;
@@ -51,7 +45,10 @@ public:
 	virtual bool IsActive() const override;
 	int32 GetFilterNum() const;
 
-	const TArray<UFilterElement*>& GetFilterElements(); 
+	const TArray<UFilterElement*>& GetFilterElements();
+
+private:
+	bool IsActiveAllElement() const;
 	
 protected:
 	UPROPERTY()

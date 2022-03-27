@@ -45,14 +45,14 @@ struct TFilterContainer : public FGCObject
 	}
 
 public:
-	TSet<T*> ApplyFilter(TArray<T*>& Objects)
+	void ApplyFilter(TArray<T*>& Objects)
 	{
-		return TSet<T*> {Objects.FilterByPredicate(*this)};
+		Objects.RemoveAll(*this);
 	}
 
-	TSet<T*> ApplyFilter(TArray<const T*>& Objects)
+	void ApplyFilter(TArray<const T*>& Objects)
 	{
-		return TSet<T*> {Objects.FilterByPredicate(*this)};
+		Objects.RemoveAll(*this);
 	}
 
 	void Empty()
@@ -68,14 +68,14 @@ public:
 	{
 		if (CurrentFilters.Num() == 0)
 		{
-			return true;
+			return false;
 		}
 		
 		for (const TWeakObjectPtr<UFilter> Filter : CurrentFilters)
 		{
 			if (Filter->IsSatisfied(_pData))
 			{
-				return true;
+				return false;
 			}			
 		}
 
@@ -83,11 +83,11 @@ public:
         {
         	if (Filter.IsValid() && Filter->IsSatisfied(_pData))
         	{
-        		return true;
+        		return false;
         	}			
         }
 		
-        return false;
+        return true;
 	}
 
 	FSimpleMulticastDelegate& GetUpdateFilter() { return OnUpdateFilter; }

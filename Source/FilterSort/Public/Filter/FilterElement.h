@@ -13,7 +13,7 @@ struct FOOO
 {
 	FText KK;
 	UTexture2D* pp = nullptr;
-	bool bActive = false;
+	TAttribute<bool> bActive = false;
 };
 
 /**

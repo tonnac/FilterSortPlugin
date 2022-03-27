@@ -3,19 +3,27 @@
 
 #include "Filter.h"
 
+#include "FilterAllElement.h"
+
 void UFilter::UpdateFilter(UFilterElement* FilterElement)
 {
-	if (CurrentFilterElements.Contains(FilterElement))
+	if (UFilterAllElement* AllElement = Cast<UFilterAllElement>(FilterElement))
 	{
-		CurrentFilterElements.Remove(FilterElement);
-		FilterElement->oo.bActive = false;
+		EmptyFilter();
 	}
 	else
 	{
-		CurrentFilterElements.Emplace(FilterElement);
-		FilterElement->oo.bActive = true;
+		if (CurrentFilterElements.Contains(FilterElement))
+		{
+			CurrentFilterElements.Remove(FilterElement);
+			FilterElement->oo.bActive = false;
+		}
+		else
+		{
+			CurrentFilterElements.Emplace(FilterElement);
+			FilterElement->oo.bActive = true;
+		}
 	}
-
 	Super::UpdateFilter(FilterElement);
 }
 
@@ -23,6 +31,17 @@ void UFilter::EmptyFilter()
 {
 	ResetFilter();
 	OnUpdateFilter.ExecuteIfBound(this, nullptr);
+}
+
+void UFilter::Initialize()
+{
+	UFilterAllElement* AllElement = NewObject<UFilterAllElement>(this);
+	if (IsValid(AllElement))
+	{
+		AllElement->oo.KK = FText::FromString(TEXT("All"));
+		AllElement->oo.bActive.BindUObject(this, &UFilter::IsActiveAllElement);
+		FilterElements.Emplace(AllElement);
+	}
 }
 
 void UFilter::ResetFilter()
@@ -50,4 +69,9 @@ int32 UFilter::GetFilterNum() const
 const TArray<UFilterElement*>& UFilter::GetFilterElements()
 {
 	return FilterElements;
+}
+
+bool UFilter::IsActiveAllElement() const
+{
+	return !IsActive();
 }
