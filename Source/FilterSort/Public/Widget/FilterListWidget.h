@@ -26,6 +26,7 @@ public:
 	{
 		FilterContainer->GetUpdateFilter().AddUObject(this, &UFilterListWidget::OnUpdateFilter);
 		ListView->SetListItems(FilterContainer->GetFilters());
+		OptionListView->SetListItems(FilterContainer->GetOptionFilters());
 	}
 
 private:
@@ -34,4 +35,7 @@ private:
 private:
 	UPROPERTY(meta=(BindWidget, EntryClass = FilterWidget))
 	UListView* ListView = nullptr;
+
+	UPROPERTY(meta=(BindWidget, EntryClass = FilterWidget))
+	UListView* OptionListView = nullptr;
 };

@@ -55,3 +55,9 @@ protected:
 	TArray<UFilterElement*> FilterElements;
 	TSet<TWeakObjectPtr<UFilterElement>> CurrentFilterElements;	
 };
+
+UCLASS(Abstract)
+class FILTERSORT_API UOptionFilter : public UFilter
+{
+	GENERATED_BODY()
+};

@@ -33,6 +33,11 @@ void UFilterWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 		}
 		CheckBox->SetCheckedState(_FilterBase->IsActive() ? ECheckBoxState::Checked : ECheckBoxState::Unchecked);
 		TextBlock->SetText(_FilterBase->GetFilterName());
+
+		if (UOptionFilter* OptionFilter = Cast<UOptionFilter>(_FilterBase))
+		{
+			TextBlock->SetColorAndOpacity(FLinearColor::Blue);
+		}
 	}
 }
 

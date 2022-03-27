@@ -7,9 +7,11 @@ void UFilterListWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	ListView->SetScrollbarVisibility(ESlateVisibility::Collapsed);
+	OptionListView->SetScrollbarVisibility(ESlateVisibility::Collapsed);
 }
 
 void UFilterListWidget::OnUpdateFilter() const
 {
 	ListView->RegenerateAllEntries();
+	OptionListView->RegenerateAllEntries();
 }

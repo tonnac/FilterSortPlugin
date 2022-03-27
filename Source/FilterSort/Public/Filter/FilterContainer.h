@@ -21,13 +21,21 @@ struct TFilterContainer : public FGCObject
 					Filters.Emplace(NewAllFilter);
 				}
 				
-				for(UClass* c : *p)
+				for (UClass* c : *p)
 				{
 					if (UFilterBase* NewFilterBase = NewObject<UFilterBase>(Outer, c))
 					{
 						NewFilterBase->Initialize();
-						NewFilterBase->OnUpdateFilter.BindRaw(this, &TFilterContainer<T>::UpdateFilter);
-						Filters.Emplace(NewFilterBase);	
+						if (UOptionFilter* NewOptionFilter = Cast<UOptionFilter>(NewFilterBase))
+						{
+							OptionFilters.Emplace(NewOptionFilter);
+							NewFilterBase->OnUpdateFilter.BindRaw(this, &TFilterContainer<T>::UpdateOptionFilter);
+						}
+						else
+						{
+							Filters.Emplace(NewFilterBase);
+							NewFilterBase->OnUpdateFilter.BindRaw(this, &TFilterContainer<T>::UpdateFilter);
+						}
 					}
 				}
 
@@ -66,20 +74,20 @@ public:
 	
 	bool operator()(const T* _pData) const
 	{
-		if (CurrentFilters.Num() == 0)
+		if (CurrentFilters.Num() == 0 && CurrentOptionFilters.Num() == 0)
 		{
 			return false;
 		}
 		
 		for (const TWeakObjectPtr<UFilter> Filter : CurrentFilters)
 		{
-			if (Filter->IsSatisfied(_pData))
+			if (Filter.IsValid() && Filter->IsSatisfied(_pData))
 			{
 				return false;
 			}			
 		}
 
-		for (TWeakObjectPtr<UFilter> Filter : OptionFilters)
+		for (const TWeakObjectPtr<UFilter> Filter : CurrentOptionFilters)
         {
         	if (Filter.IsValid() && Filter->IsSatisfied(_pData))
         	{
@@ -92,6 +100,7 @@ public:
 
 	FSimpleMulticastDelegate& GetUpdateFilter() { return OnUpdateFilter; }
 	const TArray<UFilterBase*>& GetFilters() const { return Filters; }
+	const TArray<UFilterBase*>& GetOptionFilters() const { return OptionFilters; }
 
 private:
 	void UpdateFilter(UFilterBase* FilterBase, UFilterElement* FilterElement)
@@ -116,6 +125,23 @@ private:
 		OnUpdateFilter.Broadcast();
 	}
 
+	void UpdateOptionFilter(UFilterBase* FilterBase, UFilterElement* FilterElement)
+	{
+		if (UFilter* Filter = Cast<UFilter>(FilterBase))
+		{
+			if (CurrentOptionFilters.Contains(Filter) && !Filter->IsActive())
+			{
+				CurrentOptionFilters.Remove(Filter);
+			}
+			else if (!CurrentOptionFilters.Contains(Filter) && Filter->IsActive())
+			{
+				CurrentOptionFilters.Emplace(Filter);
+			}
+		}
+	
+		OnUpdateFilter.Broadcast();
+	}
+
 	bool GetIsActiveAllFilter() const
 	{
 		return CurrentFilters.Num() == 0;
@@ -128,9 +154,9 @@ private:
 	}
 
 private:
-	TWeakObjectPtr<UFilter> AllFilter = nullptr;
 	TSet<TWeakObjectPtr<UFilter>> CurrentFilters;
-	TSet<TWeakObjectPtr<UFilter>> OptionFilters;
+	TSet<TWeakObjectPtr<UFilter>> CurrentOptionFilters;
+	TArray<UFilterBase*> OptionFilters;
 	TArray<UFilterBase*> Filters;
 	FSimpleMulticastDelegate OnUpdateFilter;
 };

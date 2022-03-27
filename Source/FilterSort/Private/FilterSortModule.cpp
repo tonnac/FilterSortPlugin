@@ -13,7 +13,8 @@ void FFilterSortModule::StartupModule()
 {
 	for (TObjectIterator<UClass> It; It; ++It)
 	{
-		const bool bFilterBase = It->GetSuperClass() == UFilter::StaticClass() || It->GetSuperClass() == UAllFilter::StaticClass();
+		UClass* SuperClass = It->GetSuperClass();
+		const bool bFilterBase = SuperClass == UFilter::StaticClass() || SuperClass == UAllFilter::StaticClass() || SuperClass == UOptionFilter::StaticClass();
 		if (!It->HasAnyClassFlags(EClassFlags::CLASS_Abstract) && bFilterBase)
 		{
 			auto filterbase = Cast<UFilterBase>(It->GetDefaultObject());
