@@ -6,13 +6,14 @@
 #include "FilterSortModule.h"
 
 template <typename T>
-struct TFilterContainer : public FGCObject
+class TFilterContainer : public FGCObject
 {
+public:
 	TFilterContainer(UObject* Outer)
 	{
-		if (FFilterSortModule* module = FModuleManager::GetModulePtr<FFilterSortModule>("FilterSort"))
+		if (FFilterSortModule* FilterSortModule = FModuleManager::GetModulePtr<FFilterSortModule>("FilterSort"))
 		{
-			if (TArray<UClass*>* p = module->classes.Find(T::StaticClass()))
+			if (TArray<UClass*>* Classes = FilterSortModule->FilterClasses.Find(T::StaticClass()))
 			{
 				if (UAllFilter* NewAllFilter = NewObject<UAllFilter>(Outer, UAllFilter::StaticClass()))
 				{
@@ -21,9 +22,9 @@ struct TFilterContainer : public FGCObject
 					Filters.Emplace(NewAllFilter);
 				}
 				
-				for (UClass* c : *p)
+				for (const UClass* FilterClass : *Classes)
 				{
-					if (UFilterBase* NewFilterBase = NewObject<UFilterBase>(Outer, c))
+					if (UFilterBase* NewFilterBase = NewObject<UFilterBase>(Outer, FilterClass))
 					{
 						NewFilterBase->Initialize();
 						if (UOptionFilter* NewOptionFilter = Cast<UOptionFilter>(NewFilterBase))
@@ -41,11 +42,6 @@ struct TFilterContainer : public FGCObject
 
 				Filters.Sort([](const UFilterBase& lhs, const UFilterBase& rhs)
 				{
-					const int32 lIndex = lhs.GetIndex();
-					const int32 rIndex = rhs.GetIndex();
-					
-					checkf(lIndex != rIndex, TEXT("Index is not equal"));
-					
 					return lhs.GetIndex() < rhs.GetIndex();					
 				});
 			}
@@ -151,6 +147,7 @@ private:
 	virtual void AddReferencedObjects(FReferenceCollector& Collector) override
 	{
 		Collector.AddReferencedObjects(Filters);
+		Collector.AddReferencedObjects(OptionFilters);
 	}
 
 private:

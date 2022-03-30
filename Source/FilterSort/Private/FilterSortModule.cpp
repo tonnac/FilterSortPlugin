@@ -11,16 +11,21 @@ DEFINE_LOG_CATEGORY(LogFilterSort)
 
 void FFilterSortModule::StartupModule()
 {
+	TMap<UClass*, TSet<int32>> FilterIndices;
 	for (TObjectIterator<UClass> It; It; ++It)
 	{
-		UClass* SuperClass = It->GetSuperClass();
+		const UClass* SuperClass = It->GetSuperClass();
 		const bool bFilterBase = SuperClass == UFilter::StaticClass() || SuperClass == UAllFilter::StaticClass() || SuperClass == UOptionFilter::StaticClass();
 		if (!It->HasAnyClassFlags(EClassFlags::CLASS_Abstract) && bFilterBase)
 		{
-			auto filterbase = Cast<UFilterBase>(It->GetDefaultObject());
-			auto dsds = filterbase->GetDataTypeClass();
+			UFilterBase* FilterBase = Cast<UFilterBase>(It->GetDefaultObject());
+			UClass* FilterClass = FilterBase->GetDataTypeClass();
+			TSet<int32>& Indices = FilterIndices.FindOrAdd(FilterClass);
+			checkf(Indices.Contains(FilterBase->GetIndex()) == false, TEXT("%s class index is equal %d"), *FilterClass->GetName(), FilterBase->GetIndex());
 
-			classes.FindOrAdd(dsds).Emplace(*It);
+			Indices.Emplace(FilterBase->GetIndex());
+
+			FilterClasses.FindOrAdd(FilterClass).Emplace(*It);
 			
 			UE_LOG(LogFilterSort, Log, TEXT("Found Class %s"), *It->GetName());
 		}
@@ -29,7 +34,7 @@ void FFilterSortModule::StartupModule()
 
 void FFilterSortModule::ShutdownModule()
 {
-	classes.Empty(0);
+	FilterClasses.Empty(0);
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
 }
