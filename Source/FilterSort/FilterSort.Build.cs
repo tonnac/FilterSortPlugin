@@ -13,14 +13,9 @@ public class FilterSort : ModuleRules
 			ModuleDirectory + "/Private",
 			ModuleDirectory + "/Public",
 			ModuleDirectory + "/Public/Filter",
+			ModuleDirectory + "/Public/Sort",
 		});
-		
-		PrivateIncludePaths.AddRange(new string[]
-		{
-			ModuleDirectory + "/Public",
-			ModuleDirectory + "/Public/Filter",
-		});
-		
+
 		PublicDependencyModuleNames.AddRange(
 			new string[]
 			{

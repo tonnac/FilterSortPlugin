@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "FilterBase.h"
 #include "FilterElement.h"
-#include "Filter/FilterFunctor.h"
 #include "Filter.generated.h"
 
 /**

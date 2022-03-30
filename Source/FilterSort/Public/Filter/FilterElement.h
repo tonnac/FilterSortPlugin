@@ -9,10 +9,10 @@
 class UAObject;
 class UTestObject;
 
-struct FOOO
+struct FFilterElementProperty
 {
-	FText KK;
-	UTexture2D* pp = nullptr;
+	FText ElementName;
+	UTexture2D* ElementTexture = nullptr;
 	TAttribute<bool> bActive = false;
 };
 
@@ -36,5 +36,5 @@ public:
 	virtual void Initialize(void* Src) PURE_VIRTUAL(UFilterElement::Initialize, );
 	
 public:
-	FOOO oo;
+	FFilterElementProperty FilterElementProperty;
 };

@@ -16,12 +16,12 @@ void UFilter::UpdateFilter(UFilterElement* FilterElement)
 		if (CurrentFilterElements.Contains(FilterElement))
 		{
 			CurrentFilterElements.Remove(FilterElement);
-			FilterElement->oo.bActive = false;
+			FilterElement->FilterElementProperty.bActive = false;
 		}
 		else
 		{
 			CurrentFilterElements.Emplace(FilterElement);
-			FilterElement->oo.bActive = true;
+			FilterElement->FilterElementProperty.bActive = true;
 		}
 	}
 	Super::UpdateFilter(FilterElement);
@@ -38,8 +38,8 @@ void UFilter::Initialize()
 	UFilterAllElement* AllElement = NewObject<UFilterAllElement>(this);
 	if (IsValid(AllElement))
 	{
-		AllElement->oo.KK = FText::FromString(TEXT("All"));
-		AllElement->oo.bActive.BindUObject(this, &UFilter::IsActiveAllElement);
+		AllElement->FilterElementProperty.ElementName = FText::FromString(TEXT("All"));
+		AllElement->FilterElementProperty.bActive.BindUObject(this, &UFilter::IsActiveAllElement);
 		FilterElements.Emplace(AllElement);
 	}
 }
@@ -50,7 +50,7 @@ void UFilter::ResetFilter()
 	{
 		if (Iter->IsValid())
 		{
-			Iter->Get()->oo.bActive = false;
+			Iter->Get()->FilterElementProperty.bActive = false;
 		}
 	}
 	CurrentFilterElements.Empty();

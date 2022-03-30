@@ -14,17 +14,17 @@ void UFilterElementWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 
 	if (UFilterElement* FilterElement = Cast<UFilterElement>(ListItemObject))
 	{
-		if (FilterElement->oo.pp != nullptr)
+		if (FilterElement->FilterElementProperty.ElementTexture != nullptr)
 		{
 			WidgetSwitcher->SetActiveWidgetIndex(ImageIndex);
-			Image->SetBrushFromTexture(FilterElement->oo.pp);
+			Image->SetBrushFromTexture(FilterElement->FilterElementProperty.ElementTexture);
 		}
 		else
 		{
 			WidgetSwitcher->SetActiveWidgetIndex(TextIndex);
-			Text->SetText(FilterElement->oo.KK);
+			Text->SetText(FilterElement->FilterElementProperty.ElementName);
 		}
-		ActiveImage->SetColorAndOpacity(FilterElement->oo.bActive.Get() ? ActiveColor : InActiveColor);
+		ActiveImage->SetColorAndOpacity(FilterElement->FilterElementProperty.bActive.Get() ? ActiveColor : InActiveColor);
 	}
 }
 

@@ -3,8 +3,10 @@
 
 #include "Widget/FilterWidget.h"
 
-#include "AllFilter.h"
 #include "Filter.h"
+#include "Components/Button.h"
+#include "Components/CheckBox.h"
+#include "Components/TextBlock.h"
 #include "Widget/FilterElementList.h"
 
 void UFilterWidget::NativeOnInitialized()
