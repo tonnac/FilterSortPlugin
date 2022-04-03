@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "FilterBase.h"
+#include "FilterSortModule.h"
 #include "AllFilter.generated.h"
 
 /**
@@ -14,7 +15,7 @@ class FILTERSORT_API UAllFilter : public UFilterBase
 {
 	GENERATED_BODY()
 
-	IMPLEMENT_COMMON_FILTER(UObject, 0)
+	IMPLEMENT_COMMON_PROPERTY(UObject, 0)
 	
 public:
 	virtual FText GetFilterName() override;

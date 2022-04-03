@@ -7,7 +7,9 @@
 #include "FilterElement.generated.h"
 
 class UAObject;
+#if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
 class UTestObject;
+#endif
 
 struct FFilterElementProperty
 {
@@ -26,9 +28,9 @@ class FILTERSORT_API UFilterElement : public UObject
 
 public:
 #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
-	ADD_DATATYPE(UTestObject)
+	ADD_FILTER_DATATYPE(UTestObject)
 #endif
-	ADD_DATATYPE(UAObject)
+	ADD_FILTER_DATATYPE(UAObject)
 
 	virtual void BeginDestroy() override;
 	

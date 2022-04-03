@@ -23,6 +23,8 @@ public:
 		Qux = FMath::RandRange(0, 4);
 	}
 
+	int32 GetFoo() const {return Foo;}
+
 public:
 	int32 Foo = 0;
 	int32 Bar = 0;

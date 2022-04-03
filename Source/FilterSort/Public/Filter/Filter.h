@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "FilterSortModule.h"
 #include "FilterBase.h"
 #include "FilterElement.h"
 #include "Filter.generated.h"

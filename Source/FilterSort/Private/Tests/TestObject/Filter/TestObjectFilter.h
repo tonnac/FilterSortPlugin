@@ -14,7 +14,7 @@ UCLASS()
 class UFooFilter : public UFilter
 {
 	GENERATED_BODY()
-	IMPLEMENT_COMMON_FILTER(UTestObject, 1)
+	IMPLEMENT_COMMON_PROPERTY(UTestObject, 1)
 
 public:
 	virtual void Initialize() override;
@@ -24,7 +24,7 @@ UCLASS()
 class UBarFilter : public UFilter
 {
 	GENERATED_BODY()
-	IMPLEMENT_COMMON_FILTER(UTestObject, 2)
+	IMPLEMENT_COMMON_PROPERTY(UTestObject, 2)
 
 public:
 	virtual void Initialize() override;
@@ -34,7 +34,7 @@ UCLASS()
 class UBazFilter : public UFilter
 {
 	GENERATED_BODY()
-	IMPLEMENT_COMMON_FILTER(UTestObject, 3)
+	IMPLEMENT_COMMON_PROPERTY(UTestObject, 3)
 
 public:
 	virtual void Initialize() override;
@@ -44,7 +44,7 @@ UCLASS()
 class UQuxFilter : public UFilter
 {
 	GENERATED_BODY()
-	IMPLEMENT_COMMON_FILTER(UTestObject, 4)
+	IMPLEMENT_COMMON_PROPERTY(UTestObject, 4)
 
 public:
 	virtual void Initialize() override;

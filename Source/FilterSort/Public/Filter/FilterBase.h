@@ -8,13 +8,7 @@
 
 class UFilterElement;
 
-#define IMPLEMENT_COMMON_FILTER(TDataType, Index)											\
-private:																					\
-	virtual UClass* GetDataTypeClass() const override { return TDataType::StaticClass(); }	\
-public:																						\
-	virtual int32 GetIndex() const override { return Index; }
-
-#define ADD_DATATYPE(TDataType)													\
+#define ADD_FILTER_DATATYPE(TDataType)													\
 public:																			\
 	virtual bool IsSatisfied(const TDataType* _pData) { return false; }
 

@@ -1,24 +1,9 @@
 ﻿
 #include "FilterContainer.h"
+#include "TestHeader.h"
 #include "TestObject/TestObject.h"
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestObjectFooFilter, "Filter.Private.TestObjectFooFilter",
 								 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
-
-TArray<UTestObject*> MakeObjects(int32 Number)
-{
-	TArray<UTestObject*> Objects;
-
-	for (int32 i = 0; i < Number; ++i)
-	{
-		if (UTestObject* Object = NewObject<UTestObject>())
-		{
-			Object->Initialize();
-			Objects.Emplace(Object);
-		}
-	}	
-
-	return Objects;
-}
 
 bool TestObjectFooFilter::RunTest(const FString& Parameters)
 {
