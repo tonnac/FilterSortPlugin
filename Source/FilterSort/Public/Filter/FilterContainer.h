@@ -17,7 +17,7 @@ public:
 			{
 				if (UAllFilter* NewAllFilter = NewObject<UAllFilter>(Outer, UAllFilter::StaticClass()))
 				{
-					NewAllFilter->GetIsActive.BindRaw(this, &TFilterContainer<T>::GetIsActiveAllFilter);
+					NewAllFilter->IsActiveFilter.BindRaw(this, &TFilterContainer<T>::IsActiveAllFilter);
 					NewAllFilter->OnUpdateFilter.BindRaw(this, &TFilterContainer<T>::UpdateFilter);
 					Filters.Emplace(NewAllFilter);
 				}
@@ -138,7 +138,7 @@ private:
 		OnUpdateFilter.Broadcast();
 	}
 
-	bool GetIsActiveAllFilter() const
+	bool IsActiveAllFilter() const
 	{
 		return CurrentFilters.Num() == 0;
 	}

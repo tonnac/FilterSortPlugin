@@ -18,9 +18,6 @@ class FILTERSORT_API UTestObjectBazSort : public USortBase
 	GENERATED_BODY()
 
 	IMPLEMENT_COMMON_PROPERTY(UTestObject, 2)
-	
-	virtual FText GetSortName() override { return FText::FromString(TEXT("Baz")); }
-
 public:
 	IMPLEMENT_SORT(UTestObject, Baz)
 };

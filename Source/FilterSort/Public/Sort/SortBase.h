@@ -17,11 +17,29 @@ enum class ESortResult : uint8
 };
 
 #define GetValueMacro(A, B) A.##B
-#define GetValueFunc(A, B) A.##B()
 
 #define ADD_SORT_DATATYPE(TDataType)																			\
 public:																											\
 	virtual ESortResult operator()(const TDataType& lhs, const TDataType& rhs) { return ESortResult::Equal; }
+
+#define IMPLEMENT_SORT(TDataType, Value)\
+virtual ESortResult operator()(const TDataType& lhs, const TDataType& rhs) override		\
+{																						\
+	auto lhsValue = GetValueMacro(lhs, Value);											\
+	auto rhsValue = GetValueMacro(rhs, Value);											\
+	if (lhsValue == rhsValue)															\
+	{																					\
+		return ESortResult::Equal;														\
+	}																					\
+	if (lhsValue > rhsValue)															\
+	{																					\
+		return ESortResult::Greater;													\
+	}																					\
+	else																				\
+	{																					\
+		return ESortResult::Lesser;														\
+	}																					\
+};
 
 UCLASS(Abstract)
 class FILTERSORT_API USortBase : public UObject

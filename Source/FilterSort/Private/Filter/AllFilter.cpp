@@ -11,9 +11,9 @@ FText UAllFilter::GetFilterName()
 
 bool UAllFilter::IsActive() const
 {
-	if (GetIsActive.IsBound())
+	if (IsActiveFilter.IsBound())
 	{
-		return GetIsActive.Execute();
+		return IsActiveFilter.Execute();
 	}
 	return false;
 }

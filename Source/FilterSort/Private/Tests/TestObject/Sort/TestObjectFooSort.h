@@ -17,9 +17,6 @@ class FILTERSORT_API UTestObjectFooSort : public USortBase
 	GENERATED_BODY()
 
 	IMPLEMENT_COMMON_PROPERTY(UTestObject, 0)
-	
-	virtual FText GetSortName() override { return FText::FromString(TEXT("Foo")); }
-
 public:
 	IMPLEMENT_SORT(UTestObject, GetFoo())
 };

@@ -22,6 +22,6 @@ public:
 	virtual bool IsActive() const override;
 
 public:
-	DECLARE_DELEGATE_RetVal(bool, FGetIsActive)
-	FGetIsActive GetIsActive;
+	DECLARE_DELEGATE_RetVal(bool, FIsActiveFilter)
+	FIsActiveFilter IsActiveFilter;
 };
