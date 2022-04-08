@@ -1,6 +1,4 @@
 ﻿#pragma once
-#include <algorithm>
-
 #include "AllFilter.h"
 #include "Filter.h"
 #include "FilterSortModule.h"

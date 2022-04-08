@@ -2,3 +2,8 @@
 
 
 #include "SortBase.h"
+
+void USortBase::UpdateSort()
+{
+	OnUpdateSort.ExecuteIfBound(this);
+}

@@ -16,6 +16,7 @@ public:
 				{
 					if (USortBase* NewSortBase = NewObject<USortBase>(Outer, FilterClass))
 					{
+						NewSortBase->OnUpdateSort.BindRaw(this, &TSortContainer<T>::OnUpdateSort);
 						Sorts.Emplace(NewSortBase);
 					}
 				}
@@ -26,6 +27,12 @@ public:
 		{
 			return lhs.GetIndex() < rhs.GetIndex();
 		});
+
+		for (USortBase* Sort : Sorts)
+		{
+			DefaultSorts.Emplace(Sort);
+		}
+		CurrentSorts = DefaultSorts;
 	}
 
 	void ApplySort(TArray<T*>& Objects)
@@ -38,41 +45,32 @@ public:
 		Objects.Sort(*this);
 	}
 
+	TOptional<bool> SortImplementation(const TArray<TWeakObjectPtr<USortBase>>& SortElements, const T& lhs, const T& rhs) const
+	{
+		for (TWeakObjectPtr<USortBase> SortBase : SortElements)
+		{
+			const ESortResult SortResult = (*SortBase)(lhs, rhs);
+
+			if (SortResult != ESortResult::Equal)
+			{
+				return bIsDescending ? SortResult == ESortResult::Greater : SortResult == ESortResult::Lesser;
+			}
+		}
+		return TOptional<bool>{};
+	};
+
 	bool operator()(const T& lhs, const T& rhs) const
 	{
-		for (USortBase* SortBase : OptionSorts)
+		if (TOptional<bool> bResult = SortImplementation(CurrentOptionSorts, lhs, rhs))
 		{
-			const ESortResult SortResult = (*SortBase)(lhs, rhs);
-
-			if (SortResult != ESortResult::Equal)
-			{
-				if (bIsDescending)
-				{
-					return SortResult == ESortResult::Greater;
-				}
-				else
-				{
-					return SortResult == ESortResult::Lesser;
-				}	
-			}
+			return bResult.GetValue();
 		}
-		
-		for (USortBase* SortBase : Sorts)
+	
+		if (TOptional<bool> bResult = SortImplementation(CurrentSorts, lhs, rhs))
 		{
-			const ESortResult SortResult = (*SortBase)(lhs, rhs);
-
-			if (SortResult != ESortResult::Equal)
-			{
-				if (bIsDescending)
-				{
-					return SortResult == ESortResult::Greater;
-				}
-				else
-				{
-					return SortResult == ESortResult::Lesser;
-				}	
-			}
+			return bResult.GetValue();
 		}
+
 		return false;
 	}
 
@@ -83,15 +81,46 @@ public:
 	}
 
 #if UE_BUILD_DEBUG || UE_BUILD_DEVELOPMENT
-	TArray<USortBase*>& GetSorts() { return Sorts; }
+	TArray<TWeakObjectPtr<USortBase>>& GetSorts() { return CurrentSorts; }
 	TArray<USortBase*>& GetOptionSorts() { return OptionSorts; }
 #else
 	const TArray<USortBase*>& GetSorts() const { return Sorts; }
 	const TArray<USortBase*>& GetOptionSorts() const { return OptionSorts; }
 #endif
+
+private:
+	void OnUpdateSort(USortBase* SortBase)
+	{
+		const int32 Index = CurrentSorts.IndexOfByKey(SortBase);
+		if (Index == 0)
+		{
+			bIsDescending = !bIsDescending;
+		}
+		else
+		{
+			CurrentSorts = DefaultSorts;
+			if (Index == INDEX_NONE)
+			{
+				CurrentSorts.Insert(SortBase, 0);
+				bIsDescending = true;
+			}
+			else
+			{
+				const int32 NewIndex = CurrentSorts.IndexOfByKey(SortBase);
+				if (NewIndex != 0)
+				{
+					CurrentSorts.Swap(0, NewIndex);
+				}
+			}
+		}	
+	}
 	
 private:
+	TArray<TWeakObjectPtr<USortBase>> DefaultSorts;
+	TArray<TWeakObjectPtr<USortBase>> CurrentSorts;
+	TArray<TWeakObjectPtr<USortBase>> CurrentOptionSorts;
+	
 	TArray<USortBase*> Sorts;
 	TArray<USortBase*> OptionSorts;
-	bool bIsDescending = false;
+	bool bIsDescending = true;
 };
