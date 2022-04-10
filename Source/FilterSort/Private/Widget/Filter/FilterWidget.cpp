@@ -1,13 +1,13 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Widget/FilterWidget.h"
+#include "Widget/Filter/FilterWidget.h"
 
 #include "Filter.h"
 #include "Components/Button.h"
 #include "Components/CheckBox.h"
 #include "Components/TextBlock.h"
-#include "Widget/FilterElementList.h"
+#include "Widget/Filter/FilterElementList.h"
 
 void UFilterWidget::NativeOnInitialized()
 {

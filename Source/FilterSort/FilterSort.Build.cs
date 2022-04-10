@@ -8,12 +8,13 @@ public class FilterSort : ModuleRules
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicIncludePaths.AddRange(new string[]
+		PrivateIncludePaths.AddRange(new string[]
 		{
 			ModuleDirectory + "/Private",
 			ModuleDirectory + "/Public",
 			ModuleDirectory + "/Public/Filter",
 			ModuleDirectory + "/Public/Sort",
+			ModuleDirectory + "/Public/Widget/Filter",
 		});
 
 		PublicDependencyModuleNames.AddRange(

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FilterContainer.h"
+#include "Filter/FilterContainer.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/ListView.h"
 #include "FilterListWidget.generated.h"

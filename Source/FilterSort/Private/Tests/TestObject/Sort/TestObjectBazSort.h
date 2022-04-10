@@ -4,9 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "FilterSortModule.h"
-#include "SortBase.h"
-#include "TestObjectBarSort.h"
-#include "Tests/TestObject/TestObject.h"
 #include "TestObjectBazSort.generated.h"
 
 /**
@@ -18,6 +15,5 @@ class FILTERSORT_API UTestObjectBazSort : public USortBase
 	GENERATED_BODY()
 
 	IMPLEMENT_COMMON_PROPERTY(UTestObject, 2)
-public:
 	IMPLEMENT_SORT(UTestObject, Baz)
 };

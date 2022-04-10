@@ -4,8 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "FilterSortModule.h"
-#include "SortBase.h"
-#include "TestObjectBarSort.h"
 #include "TestObjectQuxSort.generated.h"
 
 /**
@@ -17,6 +15,5 @@ class FILTERSORT_API UTestObjectQuxSort : public USortBase
 	GENERATED_BODY()
 
 	IMPLEMENT_COMMON_PROPERTY(UTestObject, 3)
-public:
 	IMPLEMENT_SORT(UTestObject, Qux)
 };

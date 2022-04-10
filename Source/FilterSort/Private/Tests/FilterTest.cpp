@@ -162,7 +162,7 @@ bool TestObjectCombinationFilter::RunTest(const FString& Parameters)
 	constexpr int32 TargetBarValue = 1;
 	constexpr int32 TargetBazValue = 3;
 	constexpr int32 TargetQuxValue = 4;
-
+	
 	TArray<int32> TargetValues = { TargetFooValue, TargetBarValue, TargetBazValue, TargetQuxValue };
 
 	int32 FilteredObjectNumber = 0;
