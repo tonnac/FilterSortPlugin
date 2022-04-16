@@ -111,13 +111,64 @@ bool TestObjectQuxSort::RunTest(const FString& Parameters)
 		if ((*Iter)->GetClass() != UTestObjectQuxSort::StaticClass())
 		{
 			Iter.RemoveCurrent();
+			
 		}
 	}
-	
+
 	TArray<UTestObject*> Objects = MakeObjects(50);
 	SortContainer->ApplySort(Objects);
 	IsValidSortResult_Qux(Objects, true);
 	Sorts[0]->UpdateSort();
 	SortContainer->ApplySort(Objects);
 	return IsValidSortResult_Qux(Objects, false);
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestObjectComplexSort, "Sort.Private.TestObjectComplexSort",
+								 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+#define CHECK_COMPLEX_SORT(X)\
+if (PreviousObject->Foo == CurrentObject->Foo)					\
+{																\
+	if (PreviousObject->Bar == CurrentObject->Bar)				\
+	{															\
+		if (PreviousObject->Baz == CurrentObject->Baz)			\
+		{														\
+			check(PreviousObject->Qux ##X CurrentObject->Qux);	\
+		}														\
+		else													\
+		{														\
+			check(PreviousObject->Baz ##X CurrentObject->Baz);	\
+		}														\
+	}															\
+	else														\
+	{															\
+		check(PreviousObject->Bar ##X CurrentObject->Bar);		\
+	}															\
+}																\
+else															\
+{																\
+	check(PreviousObject->Foo ##X CurrentObject->Foo);			\
+}							    
+
+bool TestObjectComplexSort::RunTest(const FString& Parameters)
+{
+	const TUniquePtr<TSortContainer<UTestObject>> SortContainer = MakeUnique<TSortContainer<UTestObject>>(GetTransientPackage());
+
+	TArray<UTestObject*> Objects = MakeObjects(50);
+	SortContainer->ApplySort(Objects);
+	for (int32 i = 1; i < Objects.Num(); ++i)
+	{
+		const UTestObject* PreviousObject = Objects[i - 1];
+		const UTestObject* CurrentObject = Objects[i];
+		CHECK_COMPLEX_SORT(>=)
+	}
+	SortContainer->GetSorts()[0]->UpdateSort();
+	SortContainer->ApplySort(Objects);
+	for (int32 i = 1; i < Objects.Num(); ++i)
+	{
+		const UTestObject* PreviousObject = Objects[i - 1];
+		const UTestObject* CurrentObject = Objects[i];
+		CHECK_COMPLEX_SORT(<=)
+	}
+	return true;
 }
