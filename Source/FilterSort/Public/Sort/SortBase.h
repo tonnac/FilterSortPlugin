@@ -48,7 +48,7 @@ public:
 	virtual UClass* GetDataTypeClass() const PURE_VIRTUAL(USortBase::GetDataTypeClass, return nullptr;)
 	virtual FText GetSortName() PURE_VIRTUAL(USortBase::GetSortName, return FText::GetEmpty();)
 	virtual int32 GetIndex() const PURE_VIRTUAL(USortBase::GetIndex, return -1;)
-	virtual bool IsActive() const PURE_VIRTUAL(USortBase::IsActive, return false;)
+	virtual bool IsActive() const;
 
 	void UpdateSort();
 
@@ -57,5 +57,8 @@ public:
 	mutable FOnUpdateSort OnUpdateSort;
 
 	DECLARE_DELEGATE_RetVal(bool, FIsDescending)
-	FIsDescending IsDescending;
+	mutable FIsDescending IsDescending;
+	
+	DECLARE_DELEGATE_RetVal_OneParam(bool, FIsActive, const USortBase*)
+	mutable FIsActive IsActiveEvent;
 };

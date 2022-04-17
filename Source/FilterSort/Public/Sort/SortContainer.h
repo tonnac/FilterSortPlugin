@@ -18,6 +18,7 @@ public:
 					{
 						NewSortBase->OnUpdateSort.BindRaw(this, &TSortContainer<T>::UpdateSort);
 						NewSortBase->IsDescending.BindRaw(this, &TSortContainer<T>::IsDescending);
+						NewSortBase->IsActiveEvent.BindRaw(this, &TSortContainer<T>::IsActiveSort);
 						Sorts.Emplace(NewSortBase);
 					}
 				}
@@ -125,6 +126,11 @@ private:
 		return bIsDescending;
 	}
 
+	bool IsActiveSort(const USortBase* SortBase) const
+	{
+		check(CurrentSorts.Num() != 0);
+		return CurrentSorts[0] == SortBase;
+	}
 
 private:
 	mutable FSimpleMulticastDelegate OnUpdateSort;

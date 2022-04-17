@@ -4,20 +4,28 @@
 #include "Widget/Sort/SortWidget.h"
 
 #include "SortBase.h"
+#include "Components/Button.h"
 #include "Components/CheckBox.h"
 #include "Components/TextBlock.h"
 
 void USortWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
 	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
-	if (USortBase* SortBase = Cast<USortBase>(ListItemObject))
+	if (USortBase* InSortBase = Cast<USortBase>(ListItemObject))
 	{
-		SetSort(SortBase);
+		SetSort(InSortBase);
 	}
 }
 
-void USortWidget::SetSort(USortBase* SortBase) const
+void USortWidget::NativeOnInitialized()
 {
+	Super::NativeOnInitialized();
+	Button->OnClicked.AddUniqueDynamic(this, &ThisClass::OnClicked_Button);
+}
+
+void USortWidget::SetSort(USortBase* InSortBase) 
+{
+	SortBase = InSortBase;
 	TextBlock->SetText(SortBase->GetSortName());
 	if (SortBase->IsActive())
 	{
@@ -29,4 +37,9 @@ void USortWidget::SetSort(USortBase* SortBase) const
 		TextBlock->SetColorAndOpacity( InActiveTextColor);
 		CheckBox->SetCheckedState(ECheckBoxState::Undetermined);
 	}
+}
+
+void USortWidget::OnClicked_Button()
+{
+	SortBase->UpdateSort();
 }

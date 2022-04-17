@@ -7,6 +7,7 @@
 #include "Blueprint/UserWidget.h"
 #include "SortWidget.generated.h"
 
+class UButton;
 class USortBase;
 class UTextBlock;
 class UCheckBox;
@@ -20,9 +21,14 @@ class FILTERSORT_API USortWidget : public UUserWidget, public IUserObjectListEnt
 
 protected:
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
+	virtual void NativeOnInitialized() override;
 public:
-	void SetSort(USortBase* SortBase) const;
+	void SetSort(USortBase* InSortBase);
 
+private:
+	UFUNCTION()
+	void OnClicked_Button();
+	
 private:
 	UPROPERTY(meta= (BindWidget))
 	UCheckBox* CheckBox = nullptr;
@@ -30,10 +36,16 @@ private:
 	UPROPERTY(meta= (BindWidget))
 	UTextBlock* TextBlock = nullptr;
 
+	UPROPERTY(meta= (BindWidget))
+	UButton* Button = nullptr;
+	
 private:
 	UPROPERTY(EditDefaultsOnly)
 	FSlateColor InActiveTextColor;
 	
 	UPROPERTY(EditDefaultsOnly)
 	FSlateColor ActiveTextColor;
+
+private:
+	TWeakObjectPtr<USortBase> SortBase;
 };
