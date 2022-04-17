@@ -126,7 +126,7 @@ bool TestObjectQuxSort::RunTest(const FString& Parameters)
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestObjectComplexSort, "Sort.Private.TestObjectComplexSort",
 								 EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 
-#define CHECK_COMPLEX_SORT(X)\
+#define CHECK_COMPLEX_SORT(X)									\
 if (PreviousObject->Foo == CurrentObject->Foo)					\
 {																\
 	if (PreviousObject->Bar == CurrentObject->Bar)				\

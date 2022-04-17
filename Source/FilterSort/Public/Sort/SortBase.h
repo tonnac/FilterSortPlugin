@@ -54,5 +54,8 @@ public:
 
 public:
 	DECLARE_DELEGATE_OneParam(FOnUpdateSort, USortBase*)
-	FOnUpdateSort OnUpdateSort;
+	mutable FOnUpdateSort OnUpdateSort;
+
+	DECLARE_DELEGATE_RetVal(bool, FIsDescending)
+	FIsDescending IsDescending;
 };

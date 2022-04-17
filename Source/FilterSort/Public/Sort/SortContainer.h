@@ -16,7 +16,8 @@ public:
 				{
 					if (USortBase* NewSortBase = NewObject<USortBase>(Outer, FilterClass))
 					{
-						NewSortBase->OnUpdateSort.BindRaw(this, &TSortContainer<T>::OnUpdateSort);
+						NewSortBase->OnUpdateSort.BindRaw(this, &TSortContainer<T>::UpdateSort);
+						NewSortBase->IsDescending.BindRaw(this, &TSortContainer<T>::IsDescending);
 						Sorts.Emplace(NewSortBase);
 					}
 				}
@@ -45,9 +46,10 @@ public:
 		Objects.Sort(*this);
 	}
 
-	TOptional<bool> SortImplementation(const TArray<TWeakObjectPtr<USortBase>>& SortElements, const T& lhs, const T& rhs) const
+	TOptional<bool> SortImplementation(const TArray<USortBase*>& SortElements, const T& lhs,
+	                                   const T& rhs) const
 	{
-		for (TWeakObjectPtr<USortBase> SortBase : SortElements)
+		for (USortBase* SortBase : SortElements)
 		{
 			const ESortResult SortResult = (*SortBase)(lhs, rhs);
 
@@ -65,7 +67,7 @@ public:
 		{
 			return bResult.GetValue();
 		}
-	
+
 		if (TOptional<bool> bResult = SortImplementation(CurrentSorts, lhs, rhs))
 		{
 			return bResult.GetValue();
@@ -80,8 +82,10 @@ public:
 		Collector.AddReferencedObjects(OptionSorts);
 	}
 
+	FSimpleMulticastDelegate& GetUpdateSort() const { return OnUpdateSort; }
+
 #if UE_BUILD_DEBUG || UE_BUILD_DEVELOPMENT
-	TArray<TWeakObjectPtr<USortBase>>& GetSorts() { return CurrentSorts; }
+	TArray<USortBase*>& GetSorts() { return CurrentSorts; }
 	TArray<USortBase*>& GetOptionSorts() { return OptionSorts; }
 #else
 	const TArray<USortBase*>& GetSorts() const { return Sorts; }
@@ -89,7 +93,7 @@ public:
 #endif
 
 private:
-	void OnUpdateSort(USortBase* SortBase)
+	void UpdateSort(USortBase* SortBase)
 	{
 		const int32 Index = CurrentSorts.IndexOfByKey(SortBase);
 		if (Index == 0)
@@ -112,14 +116,23 @@ private:
 					CurrentSorts.Swap(0, NewIndex);
 				}
 			}
-		}	
+		}
+		OnUpdateSort.Broadcast();
 	}
-	
+
+	bool IsDescending() const
+	{
+		return bIsDescending;
+	}
+
+
 private:
-	TArray<TWeakObjectPtr<USortBase>> DefaultSorts;
-	TArray<TWeakObjectPtr<USortBase>> CurrentSorts;
-	TArray<TWeakObjectPtr<USortBase>> CurrentOptionSorts;
+	mutable FSimpleMulticastDelegate OnUpdateSort;
 	
+	TArray<USortBase*> DefaultSorts;
+	TArray<USortBase*> CurrentSorts;
+	TArray<USortBase*> CurrentOptionSorts;
+
 	TArray<USortBase*> Sorts;
 	TArray<USortBase*> OptionSorts;
 	bool bIsDescending = true;
