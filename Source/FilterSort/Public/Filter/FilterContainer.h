@@ -66,7 +66,7 @@ public:
 		CurrentFilters.Empty();
 	}
 	
-	bool operator()(const T* _pData) const
+	bool operator()(const T* Data) const
 	{
 		if (CurrentFilters.Num() == 0 && CurrentOptionFilters.Num() == 0)
 		{
@@ -75,7 +75,7 @@ public:
 		
 		for (const TWeakObjectPtr<UFilter> Filter : CurrentFilters)
 		{
-			if (Filter.IsValid() && Filter->IsSatisfied(_pData))
+			if (Filter.IsValid() && Filter->IsSatisfied(Data))
 			{
 				return false;
 			}			
@@ -83,7 +83,7 @@ public:
 
 		for (const TWeakObjectPtr<UFilter> Filter : CurrentOptionFilters)
         {
-        	if (Filter.IsValid() && Filter->IsSatisfied(_pData))
+        	if (Filter.IsValid() && Filter->IsSatisfied(Data))
         	{
         		return false;
         	}			
@@ -99,41 +99,36 @@ public:
 private:
 	void UpdateFilter(UFilterBase* FilterBase, UFilterElement* FilterElement)
 	{
-		if (UFilter* Filter = Cast<UFilter>(FilterBase))
+		if (UpdateFilter_Private(CurrentFilters, FilterBase, FilterElement) == false)
 		{
-			if (CurrentFilters.Contains(Filter) && !Filter->IsActive())
-			{
-				CurrentFilters.Remove(Filter);
-			}
-			else if (!CurrentFilters.Contains(Filter) && Filter->IsActive())
-			{
-				CurrentFilters.Emplace(Filter);
-			}
-		}
-		// All Filter Click
-		else
-		{
+			// All Filter Click
 			Empty();
 		}
-	
 		OnUpdateFilter.Broadcast();
 	}
 
 	void UpdateOptionFilter(UFilterBase* FilterBase, UFilterElement* FilterElement)
 	{
+		UpdateFilter_Private(CurrentOptionFilters, FilterBase, FilterElement);
+		OnUpdateFilter.Broadcast();
+	}
+
+	bool UpdateFilter_Private(TSet<TWeakObjectPtr<UFilter>>& FilterSet, UFilterBase* FilterBase, UFilterElement* FilterElement) const
+	{
 		if (UFilter* Filter = Cast<UFilter>(FilterBase))
 		{
-			if (CurrentOptionFilters.Contains(Filter) && !Filter->IsActive())
+			if (FilterSet.Contains(Filter) && !Filter->IsActive())
 			{
-				CurrentOptionFilters.Remove(Filter);
+				FilterSet.Remove(Filter);
+				return true;
 			}
-			else if (!CurrentOptionFilters.Contains(Filter) && Filter->IsActive())
+			if (!FilterSet.Contains(Filter) && Filter->IsActive())
 			{
-				CurrentOptionFilters.Emplace(Filter);
+				FilterSet.Emplace(Filter);
+				return true;
 			}
 		}
-	
-		OnUpdateFilter.Broadcast();
+		return false;
 	}
 
 	bool IsActiveAllFilter() const

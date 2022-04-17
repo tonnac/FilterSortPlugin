@@ -12,9 +12,9 @@ public:
 		{
 			if (TArray<UClass*>* Classes = FilterSortModule->SortClasses.Find(T::StaticClass()))
 			{
-				for (const UClass* FilterClass : *Classes)
+				for (const UClass* SortClass : *Classes)
 				{
-					if (USortBase* NewSortBase = NewObject<USortBase>(Outer, FilterClass))
+					if (USortBase* NewSortBase = NewObject<USortBase>(Outer, SortClass))
 					{
 						NewSortBase->OnUpdateSort.BindRaw(this, &TSortContainer<T>::UpdateSort);
 						NewSortBase->IsDescending.BindRaw(this, &TSortContainer<T>::IsDescending);
@@ -34,7 +34,11 @@ public:
 		{
 			DefaultSorts.Emplace(Sort);
 		}
-		CurrentSorts = DefaultSorts;
+
+		if (PrioritySort.IsValid() == false)
+		{
+			UpdateSort(DefaultSorts[1].Get());
+		}
 	}
 
 	void ApplySort(TArray<T*>& Objects)
@@ -47,16 +51,19 @@ public:
 		Objects.Sort(*this);
 	}
 
-	TOptional<bool> SortImplementation(const TArray<USortBase*>& SortElements, const T& lhs,
+	TOptional<bool> SortImplementation(const TArray<TWeakObjectPtr<USortBase>>& SortElements, const T& lhs,
 	                                   const T& rhs) const
 	{
-		for (USortBase* SortBase : SortElements)
+		for (TWeakObjectPtr<USortBase> SortBase : SortElements)
 		{
-			const ESortResult SortResult = (*SortBase)(lhs, rhs);
-
-			if (SortResult != ESortResult::Equal)
+			if (SortBase.IsValid())
 			{
-				return bIsDescending ? SortResult == ESortResult::Greater : SortResult == ESortResult::Lesser;
+				const ESortResult SortResult = (*SortBase)(lhs, rhs);
+
+				if (SortResult != ESortResult::Equal)
+				{
+					return bIsDescending ? SortResult == ESortResult::Greater : SortResult == ESortResult::Lesser;
+				}
 			}
 		}
 		return TOptional<bool>{};
@@ -64,12 +71,18 @@ public:
 
 	bool operator()(const T& lhs, const T& rhs) const
 	{
+		const ESortResult SortResult = (*PrioritySort)(lhs, rhs);
+		if (SortResult != ESortResult::Equal)
+		{
+			return bIsDescending ? SortResult == ESortResult::Greater : SortResult == ESortResult::Lesser;
+		}
+		
 		if (TOptional<bool> bResult = SortImplementation(CurrentOptionSorts, lhs, rhs))
 		{
 			return bResult.GetValue();
 		}
 
-		if (TOptional<bool> bResult = SortImplementation(CurrentSorts, lhs, rhs))
+		if (TOptional<bool> bResult = SortImplementation(DefaultSorts, lhs, rhs))
 		{
 			return bResult.GetValue();
 		}
@@ -86,7 +99,7 @@ public:
 	FSimpleMulticastDelegate& GetUpdateSort() const { return OnUpdateSort; }
 
 #if UE_BUILD_DEBUG || UE_BUILD_DEVELOPMENT
-	TArray<USortBase*>& GetSorts() { return CurrentSorts; }
+	TArray<USortBase*>& GetSorts() { return Sorts; }
 	TArray<USortBase*>& GetOptionSorts() { return OptionSorts; }
 #else
 	const TArray<USortBase*>& GetSorts() const { return Sorts; }
@@ -96,31 +109,32 @@ public:
 private:
 	void UpdateSort(USortBase* SortBase)
 	{
-		const int32 Index = CurrentSorts.IndexOfByKey(SortBase);
-		if (Index == 0)
+		if (SortBase == PrioritySort)
 		{
 			bIsDescending = !bIsDescending;
 		}
 		else
 		{
-			CurrentSorts = DefaultSorts;
-			if (Index == INDEX_NONE)
+			for (int32 i = 0; i < DefaultSorts.Num(); ++i)
 			{
-				CurrentSorts.Insert(SortBase, 0);
-				bIsDescending = true;
-			}
-			else
-			{
-				const int32 NewIndex = CurrentSorts.IndexOfByKey(SortBase);
-				if (NewIndex != 0)
+				TWeakObjectPtr<USortBase>& Sort = DefaultSorts[i];
+				if (Sort.IsValid() == false)
 				{
-					CurrentSorts.Swap(0, NewIndex);
+					Sort = PrioritySort.Get();
+				}
+				else if (Sort == SortBase)
+				{
+					Sort = nullptr;
 				}
 			}
+
+			PrioritySort = SortBase;
+			bIsDescending = true;
 		}
+		
 		OnUpdateSort.Broadcast();
 	}
-
+	
 	bool IsDescending() const
 	{
 		return bIsDescending;
@@ -128,18 +142,20 @@ private:
 
 	bool IsActiveSort(const USortBase* SortBase) const
 	{
-		check(CurrentSorts.Num() != 0);
-		return CurrentSorts[0] == SortBase;
+		check(PrioritySort.IsValid());
+		return PrioritySort == SortBase;
 	}
 
 private:
 	mutable FSimpleMulticastDelegate OnUpdateSort;
 	
-	TArray<USortBase*> DefaultSorts;
-	TArray<USortBase*> CurrentSorts;
-	TArray<USortBase*> CurrentOptionSorts;
+	TArray<TWeakObjectPtr<USortBase>> DefaultSorts;
+	TArray<TWeakObjectPtr<USortBase>> CurrentOptionSorts;
 
 	TArray<USortBase*> Sorts;
 	TArray<USortBase*> OptionSorts;
 	bool bIsDescending = true;
+
+private:
+	TWeakObjectPtr<USortBase> PrioritySort = nullptr;
 };
