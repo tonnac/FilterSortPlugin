@@ -3,7 +3,7 @@
 #include "Filter.h"
 #include "FilterSortModule.h"
 
-template <typename T>
+template <typename TDataType>
 class TFilterContainer : public FGCObject
 {
 public:
@@ -11,12 +11,12 @@ public:
 	{
 		if (FFilterSortModule* FilterSortModule = FModuleManager::GetModulePtr<FFilterSortModule>("FilterSort"))
 		{
-			if (TArray<UClass*>* Classes = FilterSortModule->FilterClasses.Find(T::StaticClass()))
+			if (TArray<UClass*>* Classes = FilterSortModule->FilterClasses.Find(TDataType::StaticClass()))
 			{
 				if (UAllFilter* NewAllFilter = NewObject<UAllFilter>(Outer, UAllFilter::StaticClass()))
 				{
-					NewAllFilter->IsActiveFilter.BindRaw(this, &TFilterContainer<T>::IsActiveAllFilter);
-					NewAllFilter->OnUpdateFilter.BindRaw(this, &TFilterContainer<T>::UpdateFilter);
+					NewAllFilter->IsActiveFilter.BindRaw(this, &TFilterContainer<TDataType>::IsActiveAllFilter);
+					NewAllFilter->OnUpdateFilter.BindRaw(this, &TFilterContainer<TDataType>::UpdateFilter);
 					Filters.Emplace(NewAllFilter);
 				}
 				
@@ -28,12 +28,12 @@ public:
 						if (UOptionFilter* NewOptionFilter = Cast<UOptionFilter>(NewFilterBase))
 						{
 							OptionFilters.Emplace(NewOptionFilter);
-							NewFilterBase->OnUpdateFilter.BindRaw(this, &TFilterContainer<T>::UpdateOptionFilter);
+							NewFilterBase->OnUpdateFilter.BindRaw(this, &TFilterContainer<TDataType>::UpdateOptionFilter);
 						}
 						else
 						{
 							Filters.Emplace(NewFilterBase);
-							NewFilterBase->OnUpdateFilter.BindRaw(this, &TFilterContainer<T>::UpdateFilter);
+							NewFilterBase->OnUpdateFilter.BindRaw(this, &TFilterContainer<TDataType>::UpdateFilter);
 						}
 					}
 				}
@@ -47,12 +47,12 @@ public:
 	}
 
 public:
-	void ApplyFilter(TArray<T*>& Objects)
+	void ApplyFilter(TArray<TDataType*>& Objects)
 	{
 		Objects.RemoveAll(*this);
 	}
 
-	void ApplyFilter(TArray<const T*>& Objects)
+	void ApplyFilter(TArray<const TDataType*>& Objects)
 	{
 		Objects.RemoveAll(*this);
 	}
@@ -66,7 +66,7 @@ public:
 		CurrentFilters.Empty();
 	}
 	
-	bool operator()(const T* Data) const
+	bool operator()(const TDataType* Data) const
 	{
 		if (CurrentFilters.Num() == 0 && CurrentOptionFilters.Num() == 0)
 		{

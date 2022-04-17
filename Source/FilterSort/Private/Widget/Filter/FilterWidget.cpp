@@ -19,13 +19,13 @@ void UFilterWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
 	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
 
-	if (UFilterBase* _FilterBase = Cast<UFilterBase>(ListItemObject))
+	if (UFilterBase* InFilterBase = Cast<UFilterBase>(ListItemObject))
 	{
-		FilterBase = _FilterBase;
-		if (UFilter* _Filter = Cast<UFilter>(_FilterBase))
+		FilterBase = InFilterBase;
+		if (UFilter* Filter = Cast<UFilter>(InFilterBase))
 		{
-			Button->SetIsEnabled(_Filter->GetFilterNum() != 0);
-			SetFilterElements(_Filter);
+			Button->SetIsEnabled(Filter->GetFilterElementNum() != 0);
+			SetFilterElements(Filter);
 		}
 		// All Filter
 		else
@@ -33,10 +33,10 @@ void UFilterWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 			FilterElementList->SetIsEnabled(false);
 			Button->SetIsEnabled(true);
 		}
-		CheckBox->SetCheckedState(_FilterBase->IsActive() ? ECheckBoxState::Checked : ECheckBoxState::Unchecked);
-		TextBlock->SetText(_FilterBase->GetFilterName());
+		CheckBox->SetCheckedState(InFilterBase->IsActive() ? ECheckBoxState::Checked : ECheckBoxState::Unchecked);
+		TextBlock->SetText(InFilterBase->GetFilterName());
 
-		if (UOptionFilter* OptionFilter = Cast<UOptionFilter>(_FilterBase))
+		if (UOptionFilter* OptionFilter = Cast<UOptionFilter>(InFilterBase))
 		{
 			TextBlock->SetColorAndOpacity(FLinearColor::Blue);
 		}

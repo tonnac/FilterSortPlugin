@@ -43,7 +43,7 @@ public:
 	void EmptyFilter();
 
 	virtual bool IsActive() const override;
-	int32 GetFilterNum() const;
+	int32 GetFilterElementNum() const;
 
 	const TArray<UFilterElement*>& GetFilterElements();
 

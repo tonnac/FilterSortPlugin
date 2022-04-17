@@ -31,21 +31,24 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestObjectFooSort, "Sort.Private.TestObjectFooS
 
 bool TestObjectFooSort::RunTest(const FString& Parameters)
 {
-	const TUniquePtr<TSortContainer<UTestObject>> SortContainer = MakeUnique<TSortContainer<UTestObject>>(GetTransientPackage());
+	const TUniquePtr<TSortContainer<UTestObject>> SortContainer = MakeUnique<TSortContainer<UTestObject>>(GetTransientPackage(), TArray<UClass*> { UTestObjectFooSort::StaticClass() });
 
 	auto& Sorts = SortContainer->GetSorts();
+	TWeakObjectPtr<USortBase> FooSort;
 	for (auto Iter = Sorts.CreateIterator(); Iter; ++Iter)
 	{
-		if ((*Iter)->GetClass() != UTestObjectFooSort::StaticClass())
+		if ((*Iter)->GetClass() == UTestObjectFooSort::StaticClass())
 		{
-			Iter.RemoveCurrent();
+			FooSort = *Iter;
+			break;
 		}
 	}
-	
+
+	check(FooSort.IsValid());
 	TArray<UTestObject*> Objects = MakeObjects(50);
 	SortContainer->ApplySort(Objects);
 	IsValidSortResult_Foo(Objects, true);
-	Sorts[0]->UpdateSort();
+	FooSort->UpdateSort();
 	SortContainer->ApplySort(Objects);
 	return IsValidSortResult_Foo(Objects, false);
 }
@@ -55,21 +58,24 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestObjectBarSort, "Sort.Private.TestObjectBarS
 
 bool TestObjectBarSort::RunTest(const FString& Parameters)
 {
-	const TUniquePtr<TSortContainer<UTestObject>> SortContainer = MakeUnique<TSortContainer<UTestObject>>(GetTransientPackage());
+	const TUniquePtr<TSortContainer<UTestObject>> SortContainer = MakeUnique<TSortContainer<UTestObject>>(GetTransientPackage(), TArray<UClass*> { UTestObjectBarSort::StaticClass() });
 
 	auto& Sorts = SortContainer->GetSorts();
+	TWeakObjectPtr<USortBase> BarSort;
 	for (auto Iter = Sorts.CreateIterator(); Iter; ++Iter)
 	{
-		if ((*Iter)->GetClass() != UTestObjectBarSort::StaticClass())
+		if ((*Iter)->GetClass() == UTestObjectBarSort::StaticClass())
 		{
-			Iter.RemoveCurrent();
+			BarSort = *Iter;
+			break;
 		}
 	}
-	
+
+	check(BarSort.IsValid());
 	TArray<UTestObject*> Objects = MakeObjects(50);
 	SortContainer->ApplySort(Objects);
 	IsValidSortResult_Bar(Objects, true);
-	Sorts[0]->UpdateSort();
+	BarSort->UpdateSort();
 	SortContainer->ApplySort(Objects);
 	return IsValidSortResult_Bar(Objects, false);
 }
@@ -79,21 +85,24 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestObjectBazSort, "Sort.Private.TestObjectBazS
 
 bool TestObjectBazSort::RunTest(const FString& Parameters)
 {
-	const TUniquePtr<TSortContainer<UTestObject>> SortContainer = MakeUnique<TSortContainer<UTestObject>>(GetTransientPackage());
+	const TUniquePtr<TSortContainer<UTestObject>> SortContainer = MakeUnique<TSortContainer<UTestObject>>(GetTransientPackage(), TArray<UClass*> { UTestObjectBazSort::StaticClass() });
 
 	auto& Sorts = SortContainer->GetSorts();
+	TWeakObjectPtr<USortBase> BazSort;
 	for (auto Iter = Sorts.CreateIterator(); Iter; ++Iter)
 	{
-		if ((*Iter)->GetClass() != UTestObjectBazSort::StaticClass())
+		if ((*Iter)->GetClass() == UTestObjectBazSort::StaticClass())
 		{
-			Iter.RemoveCurrent();
+			BazSort = *Iter;
+			break;
 		}
 	}
-	
+
+	check(BazSort.IsValid());
 	TArray<UTestObject*> Objects = MakeObjects(50);
 	SortContainer->ApplySort(Objects);
 	IsValidSortResult_Baz(Objects, true);
-	Sorts[0]->UpdateSort();
+	BazSort->UpdateSort();
 	SortContainer->ApplySort(Objects);
 	return IsValidSortResult_Baz(Objects, false);
 }
@@ -103,22 +112,24 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestObjectQuxSort, "Sort.Private.TestObjectQuxS
 
 bool TestObjectQuxSort::RunTest(const FString& Parameters)
 {
-	const TUniquePtr<TSortContainer<UTestObject>> SortContainer = MakeUnique<TSortContainer<UTestObject>>(GetTransientPackage());
+	const TUniquePtr<TSortContainer<UTestObject>> SortContainer = MakeUnique<TSortContainer<UTestObject>>(GetTransientPackage(), TArray<UClass*> { UTestObjectQuxSort::StaticClass() });
 
 	auto& Sorts = SortContainer->GetSorts();
+	TWeakObjectPtr<USortBase> QuxSort;
 	for (auto Iter = Sorts.CreateIterator(); Iter; ++Iter)
 	{
-		if ((*Iter)->GetClass() != UTestObjectQuxSort::StaticClass())
+		if ((*Iter)->GetClass() == UTestObjectQuxSort::StaticClass())
 		{
-			Iter.RemoveCurrent();
-			
+			QuxSort = *Iter;
+			break;
 		}
 	}
 
+	check(QuxSort.IsValid());
 	TArray<UTestObject*> Objects = MakeObjects(50);
 	SortContainer->ApplySort(Objects);
 	IsValidSortResult_Qux(Objects, true);
-	Sorts[0]->UpdateSort();
+	QuxSort->UpdateSort();
 	SortContainer->ApplySort(Objects);
 	return IsValidSortResult_Qux(Objects, false);
 }

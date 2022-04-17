@@ -2,23 +2,23 @@
 #include "FilterSortModule.h"
 #include "SortBase.h"
 
-template <typename T>
+template <typename TDataType>
 class TSortContainer : public FGCObject
 {
 public:
-	TSortContainer(UObject* Outer)
+	TSortContainer(UObject* Outer, TArray<UClass*> DefaultSortClasses = TArray<UClass*> {})
 	{
 		if (FFilterSortModule* FilterSortModule = FModuleManager::GetModulePtr<FFilterSortModule>("FilterSort"))
 		{
-			if (TArray<UClass*>* Classes = FilterSortModule->SortClasses.Find(T::StaticClass()))
+			if (TArray<UClass*>* Classes = FilterSortModule->SortClasses.Find(TDataType::StaticClass()))
 			{
 				for (const UClass* SortClass : *Classes)
 				{
 					if (USortBase* NewSortBase = NewObject<USortBase>(Outer, SortClass))
 					{
-						NewSortBase->OnUpdateSort.BindRaw(this, &TSortContainer<T>::UpdateSort);
-						NewSortBase->IsDescending.BindRaw(this, &TSortContainer<T>::IsDescending);
-						NewSortBase->IsActiveEvent.BindRaw(this, &TSortContainer<T>::IsActiveSort);
+						NewSortBase->OnUpdateSort.BindRaw(this, &TSortContainer<TDataType>::UpdateSort);
+						NewSortBase->IsDescending.BindRaw(this, &TSortContainer<TDataType>::IsDescending);
+						NewSortBase->IsActiveEvent.BindRaw(this, &TSortContainer<TDataType>::IsActiveSort);
 						Sorts.Emplace(NewSortBase);
 					}
 				}
@@ -30,29 +30,46 @@ public:
 			return lhs.GetIndex() < rhs.GetIndex();
 		});
 
-		for (USortBase* Sort : Sorts)
+		if (DefaultSortClasses.Num() == 0)
 		{
-			DefaultSorts.Emplace(Sort);
+			for (USortBase* Sort : Sorts)
+			{
+				DefaultSorts.Emplace(Sort);
+			}
+		}
+		else
+		{
+			for (USortBase* Sort : Sorts)
+			{
+				UClass** FoundClass = DefaultSortClasses.FindByPredicate([Sort](const UClass* SortClass)
+				{
+					return Sort->GetClass() == SortClass;	
+				});
+				if (FoundClass)
+				{
+					DefaultSorts.Emplace(Sort);
+				}
+			}
 		}
 
 		if (PrioritySort.IsValid() == false)
 		{
-			UpdateSort(DefaultSorts[1].Get());
+			UpdateSort(DefaultSorts[0].Get());
 		}
 	}
 
-	void ApplySort(TArray<T*>& Objects)
+	void ApplySort(TArray<TDataType*>& Objects)
 	{
 		Objects.Sort(*this);
 	}
 
-	void ApplySort(TArray<const T*>& Objects)
+	void ApplySort(TArray<const TDataType*>& Objects)
 	{
 		Objects.Sort(*this);
 	}
 
-	TOptional<bool> SortImplementation(const TArray<TWeakObjectPtr<USortBase>>& SortElements, const T& lhs,
-	                                   const T& rhs) const
+	TOptional<bool> SortImplementation(const TArray<TWeakObjectPtr<USortBase>>& SortElements, const TDataType& lhs,
+	                                   const TDataType& rhs) const
 	{
 		for (TWeakObjectPtr<USortBase> SortBase : SortElements)
 		{
@@ -69,12 +86,11 @@ public:
 		return TOptional<bool>{};
 	};
 
-	bool operator()(const T& lhs, const T& rhs) const
+	bool operator()(const TDataType& lhs, const TDataType& rhs) const
 	{
-		const ESortResult SortResult = (*PrioritySort)(lhs, rhs);
-		if (SortResult != ESortResult::Equal)
+		if (TOptional<bool> bResult = SortImplementation({ PrioritySort }, lhs, rhs))
 		{
-			return bIsDescending ? SortResult == ESortResult::Greater : SortResult == ESortResult::Lesser;
+			return bResult.GetValue();
 		}
 		
 		if (TOptional<bool> bResult = SortImplementation(CurrentOptionSorts, lhs, rhs))

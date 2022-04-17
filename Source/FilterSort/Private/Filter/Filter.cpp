@@ -61,7 +61,7 @@ bool UFilter::IsActive() const
 	return CurrentFilterElements.Num() != 0;
 }
 
-int32 UFilter::GetFilterNum() const
+int32 UFilter::GetFilterElementNum() const
 {
 	return FilterElements.Num();
 }
